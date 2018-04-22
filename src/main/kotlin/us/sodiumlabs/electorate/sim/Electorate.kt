@@ -11,12 +11,14 @@ import kotlin.collections.HashMap
 
 fun generateElectorate(random: Random, policies: List<Policy>, electorCount: Int, candidateCount: Int): Electorate {
 
+    val voterRandom = Random(random.nextLong())
     val voters = IntStream.range(0, electorCount)
-            .mapToObj { Voter(generateRandomStances(random, policies)) }
+            .mapToObj { Voter(generateRandomStances(Random(voterRandom.nextLong()), policies)) }
             .collect(Collectors.toList())
 
+    val candidateRandom = Random(random.nextLong())
     val candidates = IntStream.range(0, candidateCount)
-            .mapToObj { Candidate(generateRandomStances(random, policies)) }
+            .mapToObj { Candidate(generateRandomStances(Random(candidateRandom.nextLong()), policies)) }
             .collect(Collectors.toList())
 
     return Electorate(voters, candidates)

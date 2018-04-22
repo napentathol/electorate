@@ -12,8 +12,8 @@ import us.sodiumlabs.electorate.sortition.Sortition
 import java.util.*
 
 fun main(args: Array<String>) {
-    val generatorRandom = Random(0x1337)
-    val electoralRandom = Random(0x1337AF)
+    val seedRandom = Random(0x1337_AFC0_FFEE_BEEF)
+    val electorateRandom = Random(seedRandom.nextLong())
 
     val policies = ImmutableList.of(
             Policy("Apples"),
@@ -23,15 +23,15 @@ fun main(args: Array<String>) {
             Policy("Grapes") )
 
     val electionSim = ElectionSim(ImmutableList.of(
-        Sortition(electoralRandom),
+        Sortition(Random(seedRandom.nextLong())),
         Plurality(),
         StrategicPlurality(),
-        RandomTwoPartyPlurality(electoralRandom),
+        RandomTwoPartyPlurality(Random(seedRandom.nextLong())),
         RangeVoting()
     ))
 
     for( i in 1..100 ) {
-        val electorate = generateElectorate(generatorRandom, policies, 100, 10)
+        val electorate = generateElectorate(electorateRandom, policies, 100, 10)
         electionSim.runElectionSuite(electorate)
     }
 
