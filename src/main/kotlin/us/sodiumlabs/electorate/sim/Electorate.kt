@@ -86,7 +86,7 @@ class Electorate(private val electorate: List<Voter>, val candidates: List<Candi
     }
 }
 
-class Voter(private val stances: List<Stance>) {
+class Voter(val stances: List<Stance>) {
     fun calculateCandidateUtility(candidate: Candidate): BigDecimal {
         return stances.stream()
                 .map { s ->
@@ -128,7 +128,7 @@ class Candidate(stanceList: List<Stance>) {
 
 class Stance(val policy: Policy, val value: BigDecimal)
 
-private val NULL_STANCE = Stance(Policy("null"), BigDecimal.valueOf(0.5))
+val NULL_STANCE = Stance(Policy("null"), BigDecimal.valueOf(0.5))
 
 class Policy(s: String): StringWrapper(s)
 

@@ -1,6 +1,7 @@
 package us.sodiumlabs.electorate
 
 import com.google.common.collect.ImmutableList
+import us.sodiumlabs.electorate.plurality.ElectedTwoPartyPlurality
 import us.sodiumlabs.electorate.plurality.Plurality
 import us.sodiumlabs.electorate.plurality.StrategicPlurality
 import us.sodiumlabs.electorate.plurality.RandomTwoPartyPlurality
@@ -27,6 +28,7 @@ fun main(args: Array<String>) {
         Plurality(),
         StrategicPlurality(),
         RandomTwoPartyPlurality(Random(seedRandom.nextLong())),
+        ElectedTwoPartyPlurality(),
         RangeVoting()
     ))
 
