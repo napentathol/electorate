@@ -25,7 +25,9 @@ abstract class StringWrapper(private val s: String): Comparable<StringWrapper> {
     override fun toString(): String = s
 }
 
-internal class BigDecimalAverageCollector : Collector<BigDecimal, BigDecimalAverageCollector.BigDecimalAccumulator, BigDecimal> {
+class Tuple<S, T>(val s: S, val t: T)
+
+class BigDecimalAverageCollector : Collector<BigDecimal, BigDecimalAverageCollector.BigDecimalAccumulator, BigDecimal> {
 
     override fun supplier(): Supplier<BigDecimalAccumulator> {
         return Supplier { BigDecimalAccumulator() }
@@ -47,7 +49,7 @@ internal class BigDecimalAverageCollector : Collector<BigDecimal, BigDecimalAver
         return Collections.emptySet()
     }
 
-    internal class BigDecimalAccumulator() {
+    class BigDecimalAccumulator() {
         private var sum = BigDecimal.ZERO
         private var count = BigDecimal.ZERO
 

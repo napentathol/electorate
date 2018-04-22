@@ -4,7 +4,6 @@ import com.google.common.collect.HashMultiset
 import us.sodiumlabs.electorate.sim.Candidate
 import us.sodiumlabs.electorate.sim.ElectoralSystemName
 import us.sodiumlabs.electorate.sim.Electorate
-import kotlin.streams.toList
 
 open class StrategicPlurality : Plurality() {
     companion object {
@@ -21,10 +20,7 @@ open class StrategicPlurality : Plurality() {
 
         preBallots.mapTo(ballotCount) { it.candidate }
 
-        val ranking = ballotCount.entrySet().stream()
-                .sorted { o1, o2 -> o2.count - o1.count }
-                .map { it.element }
-                .toList()
+        val ranking = sortedCandidateList(ballotCount)
 
         ballotCount.clear()
 

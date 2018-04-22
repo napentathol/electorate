@@ -7,6 +7,8 @@ import us.sodiumlabs.electorate.plurality.Plurality
 import us.sodiumlabs.electorate.plurality.StrategicPlurality
 import us.sodiumlabs.electorate.plurality.RandomTwoPartyPlurality
 import us.sodiumlabs.electorate.range.RangeVoting
+import us.sodiumlabs.electorate.range.StarVoting
+import us.sodiumlabs.electorate.ranked.InstantRunnoff
 import us.sodiumlabs.electorate.sim.ElectionSim
 import us.sodiumlabs.electorate.sim.Policy
 import us.sodiumlabs.electorate.sim.generateElectorate
@@ -26,12 +28,19 @@ fun main(args: Array<String>) {
             Policy("Grapes") )
 
     val electionSim = ElectionSim(ImmutableList.of(
+        // Random elections
         Sortition(Random(seedRandom.nextLong())),
+        // Plurality elections
         Plurality(),
         StrategicPlurality(),
         RandomTwoPartyPlurality(Random(seedRandom.nextLong())),
         ElectedTwoPartyPlurality(),
+        // Range elections
         RangeVoting(),
+        StarVoting(),
+        // Ranked elections
+        InstantRunnoff(),
+        // Approval elections
         ApprovalVoting(ApprovalVoting.ThresholdApprovalVotingStrategy(BigDecimal.valueOf(0.5))),
         ApprovalVoting(ApprovalVoting.ThresholdApprovalVotingStrategy(BigDecimal.valueOf(0.75))),
         ApprovalVoting(ApprovalVoting.ThresholdApprovalVotingStrategy(BigDecimal.valueOf(0.25))),

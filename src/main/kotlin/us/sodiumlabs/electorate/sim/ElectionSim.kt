@@ -10,7 +10,7 @@ import us.sodiumlabs.electorate.BigDecimalAverageCollector
 import us.sodiumlabs.electorate.StringWrapper
 import java.io.FileWriter
 import java.math.BigDecimal
-import java.util.Comparator
+import kotlin.streams.toList
 
 class ElectionSim(private val electoralSystems: List<ElectoralSystem>) {
     private val regretMatrix: Multimap<ElectoralSystemName, BigDecimal> = HashMultimap.create()
@@ -84,6 +84,13 @@ interface ElectoralSystem {
                 .findFirst()
                 .orElseThrow { RuntimeException("There should be a candidate with votes!") }
                 .element
+    }
+
+    fun sortedCandidateList(count: Multiset<Candidate>): List<Candidate> {
+        return count.entrySet().stream()
+                .sorted { o1, o2 -> o2.count - o1.count }
+                .map { it.element }
+                .toList()
     }
 }
 
