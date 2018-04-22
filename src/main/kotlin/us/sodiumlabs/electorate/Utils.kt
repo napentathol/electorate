@@ -15,19 +15,14 @@ fun generateRandomBigDecimal(random: Random): BigDecimal {
     return BigDecimal(random.nextInt(1_000_000_000)).divide(BigDecimal(1_000_000_000), PRECISION, RoundingMode.FLOOR)
 }
 
-abstract class StringWrapper(private val s: String) {
-    override fun hashCode(): Int {
-        return s.hashCode()
-    }
+abstract class StringWrapper(private val s: String): Comparable<StringWrapper> {
+    override fun compareTo(other: StringWrapper): Int = s.compareTo(other.s)
 
-    override fun equals(other: Any?): Boolean {
-        return other is StringWrapper
-                && other.s == s
-    }
+    override fun hashCode(): Int = s.hashCode()
 
-    override fun toString(): String {
-        return s
-    }
+    override fun equals(other: Any?): Boolean = other is StringWrapper && other.s == s
+
+    override fun toString(): String = s
 }
 
 internal class BigDecimalAverageCollector : Collector<BigDecimal, BigDecimalAverageCollector.BigDecimalAccumulator, BigDecimal> {

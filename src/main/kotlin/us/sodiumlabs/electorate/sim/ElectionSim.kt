@@ -10,6 +10,7 @@ import us.sodiumlabs.electorate.BigDecimalAverageCollector
 import us.sodiumlabs.electorate.StringWrapper
 import java.io.FileWriter
 import java.math.BigDecimal
+import java.util.Comparator
 
 class ElectionSim(private val electoralSystems: List<ElectoralSystem>) {
     private val regretMatrix: Multimap<ElectoralSystemName, BigDecimal> = HashMultimap.create()
@@ -36,9 +37,11 @@ class ElectionSim(private val electoralSystems: List<ElectoralSystem>) {
         val prettyGson = GsonBuilder().setPrettyPrinting().create()
 
         val regretStats = JsonObject()
-        regretMatrix.keySet().forEach { k ->
-            regretStats.add(k.toString(), regretStatsToJson(k))
-        }
+        regretMatrix.keySet().stream()
+                .sorted()
+                .forEach { k ->
+                    regretStats.add(k.toString(), regretStatsToJson(k))
+                }
 
         println(prettyGson.toJson(regretStats))
     }

@@ -1,6 +1,7 @@
 package us.sodiumlabs.electorate
 
 import com.google.common.collect.ImmutableList
+import us.sodiumlabs.electorate.approval.ApprovalVoting
 import us.sodiumlabs.electorate.plurality.ElectedTwoPartyPlurality
 import us.sodiumlabs.electorate.plurality.Plurality
 import us.sodiumlabs.electorate.plurality.StrategicPlurality
@@ -10,6 +11,7 @@ import us.sodiumlabs.electorate.sim.ElectionSim
 import us.sodiumlabs.electorate.sim.Policy
 import us.sodiumlabs.electorate.sim.generateElectorate
 import us.sodiumlabs.electorate.sortition.Sortition
+import java.math.BigDecimal
 import java.util.*
 
 fun main(args: Array<String>) {
@@ -29,7 +31,12 @@ fun main(args: Array<String>) {
         StrategicPlurality(),
         RandomTwoPartyPlurality(Random(seedRandom.nextLong())),
         ElectedTwoPartyPlurality(),
-        RangeVoting()
+        RangeVoting(),
+        ApprovalVoting(ApprovalVoting.ThresholdApprovalVotingStrategy(BigDecimal.valueOf(0.5))),
+        ApprovalVoting(ApprovalVoting.ThresholdApprovalVotingStrategy(BigDecimal.valueOf(0.75))),
+        ApprovalVoting(ApprovalVoting.ThresholdApprovalVotingStrategy(BigDecimal.valueOf(0.25))),
+        ApprovalVoting(ApprovalVoting.MeanThresholdAppovalVotingStrategy()),
+        ApprovalVoting(ApprovalVoting.RandomThresholdApprovalVotingStrategy(Random(seedRandom.nextLong())))
     ))
 
     for( i in 1..100 ) {
