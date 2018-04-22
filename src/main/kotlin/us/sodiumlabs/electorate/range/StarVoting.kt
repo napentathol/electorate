@@ -8,7 +8,7 @@ import us.sodiumlabs.electorate.sim.Electorate
 /**
  * Score-then-runoff
  */
-class StarVoting: RangeVoting() {
+class StarVoting : RangeVoting() {
     companion object {
         val SYSTEM_NAME = ElectoralSystemName("Range - STAR - Pure")
     }
@@ -36,9 +36,9 @@ class StarVoting: RangeVoting() {
             val preference1 = it.candidateMarks.count(candidate1)
             val preference2 = it.candidateMarks.count(candidate2)
 
-            if(preference1 > preference2) {
+            if (preference1 > preference2) {
                 ballotCount.add(candidate1)
-            } else if(preference2 > preference1) {
+            } else if (preference2 > preference1) {
                 ballotCount.add(candidate2)
             }
         }

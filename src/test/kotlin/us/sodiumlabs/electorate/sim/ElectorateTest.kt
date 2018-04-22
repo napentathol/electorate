@@ -3,7 +3,7 @@ package us.sodiumlabs.electorate.sim
 import com.google.common.collect.ImmutableList
 import org.junit.jupiter.api.Test
 
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import java.math.BigDecimal
 
 internal class ElectorateTest {
@@ -132,5 +132,4 @@ internal class ElectorateTest {
                 Stance(Policy("Issue1"), BigDecimal.valueOf(issue1)),
                 Stance(Policy("Issue2"), BigDecimal.valueOf(issue2))))
     }
-
 }

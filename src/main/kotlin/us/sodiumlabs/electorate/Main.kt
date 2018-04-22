@@ -14,7 +14,7 @@ import us.sodiumlabs.electorate.sim.Policy
 import us.sodiumlabs.electorate.sim.generateElectorate
 import us.sodiumlabs.electorate.sortition.Sortition
 import java.math.BigDecimal
-import java.util.*
+import java.util.Random
 
 fun main(args: Array<String>) {
     val seedRandom = Random(0x1337_AFC0_FFEE_BEEF)
@@ -48,7 +48,7 @@ fun main(args: Array<String>) {
         ApprovalVoting(ApprovalVoting.RandomThresholdApprovalVotingStrategy(Random(seedRandom.nextLong())))
     ))
 
-    for( i in 1..100 ) {
+    for ( i in 1..100 ) {
         val electorate = generateElectorate(electorateRandom, policies, 100, 10)
         electionSim.runElectionSuite(electorate)
     }

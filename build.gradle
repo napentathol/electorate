@@ -8,6 +8,8 @@ buildscript {
 
     ext.junit_version = '5.2.0-M1'
 
+    ext.ktlint_verstion = '0.22.0'
+
     repositories {
         mavenCentral()
     }
@@ -20,6 +22,11 @@ apply plugin: 'kotlin'
 
 repositories {
     mavenCentral()
+    jcenter()
+}
+
+configurations {
+    ktlint
 }
 
 dependencies {
@@ -28,6 +35,8 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
 
     testCompile "org.junit.jupiter:junit-jupiter-api:$junit_version"
+
+    ktlint "com.github.shyiko:ktlint:$ktlint_verstion"
 }
 
 compileKotlin {
@@ -35,4 +44,22 @@ compileKotlin {
 }
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
+}
+
+task ktlint(type: JavaExec, group: "verification") {
+    description = "Check Kotlin code style."
+    classpath = configurations.ktlint
+    main = "com.github.shyiko.ktlint.Main"
+    args "src/**/*.kt"
+    // to generate report in checkstyle format prepend following args:
+    // "--reporter=plain", "--reporter=checkstyle,output=${buildDir}/ktlint.xml"
+    // see https://github.com/shyiko/ktlint#usage for more
+}
+check.dependsOn ktlint
+
+task ktlintFormat(type: JavaExec, group: "formatting") {
+    description = "Fix Kotlin code style deviations."
+    classpath = configurations.ktlint
+    main = "com.github.shyiko.ktlint.Main"
+    args "-F", "src/**/*.kt"
 }

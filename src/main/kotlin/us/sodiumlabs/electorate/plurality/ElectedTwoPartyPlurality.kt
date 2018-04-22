@@ -3,10 +3,18 @@ package us.sodiumlabs.electorate.plurality
 import com.google.common.collect.HashMultiset
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.ImmutableMap
-import us.sodiumlabs.electorate.sim.*
+import us.sodiumlabs.electorate.sim.Ballot
+import us.sodiumlabs.electorate.sim.Candidate
+import us.sodiumlabs.electorate.sim.ElectoralSystemName
+import us.sodiumlabs.electorate.sim.Electorate
+import us.sodiumlabs.electorate.sim.NULL_STANCE
+import us.sodiumlabs.electorate.sim.Policy
+import us.sodiumlabs.electorate.sim.Stance
+import us.sodiumlabs.electorate.sim.Voter
+import us.sodiumlabs.electorate.sim.VotingStrategy
 import java.math.BigDecimal
 
-class ElectedTwoPartyPlurality: Plurality() {
+class ElectedTwoPartyPlurality : Plurality() {
     companion object {
         val SYSTEM_NAME = ElectoralSystemName("Plurality - Elected Two Party")
         val CONTENTION_STRATEGY = ContentionVotingStrategy()
@@ -21,37 +29,37 @@ class ElectedTwoPartyPlurality: Plurality() {
         val policyPolling = electorate.poll(CONTENTION_STRATEGY)
         val policyContentionMap = HashMap<Policy, BigDecimal>()
 
-        for(i in 0 until policyPolling.size - 1) {
-            for(j in i until policyPolling.size) {
+        for (i in 0 until policyPolling.size - 1) {
+            for (j in i until policyPolling.size) {
                 val v1 = policyPolling[i]
                 val v2 = policyPolling[j]
 
-                for((key, value) in v1.stances) {
+                for ((key, value) in v1.stances) {
                     val s1 = value.value
                     val s2 = v2.stances.getOrDefault(key, NULL_STANCE).value
 
                     policyContentionMap.compute(key, { _, it ->
                         val diff = (s1 - s2).abs()
 
-                        if(it == null) {
+                        if (it == null) {
                             diff
                         } else {
                             it + diff
                         }
-                    } )
+                    })
                 }
             }
         }
 
         val electedPolicy = policyContentionMap.entries.stream()
-                .reduce({ a,b ->
-                    if(a.value > b.value) {
+                .reduce({ a, b ->
+                    if (a.value > b.value) {
                         a
                     } else {
                         b
                     }
                 })
-                .orElseThrow({RuntimeException("Should elect a policy!")})
+                .orElseThrow({ RuntimeException("Should elect a policy!") })
                 .key
 
         // Run Primaries based on the contentious policy.
@@ -84,7 +92,7 @@ class ElectedTwoPartyPlurality: Plurality() {
         }
     }
 
-    class PolicyContentionBallot(stanceList: List<Stance>): Ballot {
+    class PolicyContentionBallot(stanceList: List<Stance>) : Ballot {
         val stances: Map<Policy, Stance>
 
         init {
@@ -99,10 +107,10 @@ class ElectedTwoPartyPlurality: Plurality() {
             var maximumUtility = BigDecimal.valueOf(-1.0)
             var outCandidate: Candidate? = null
 
-            for(c in candidates) {
+            for (c in candidates) {
                 val utility = voter.calculateCandidateUtility(c)
 
-                if(utility > maximumUtility) {
+                if (utility > maximumUtility) {
                     maximumUtility = utility
                     outCandidate = c
                 }
@@ -113,11 +121,11 @@ class ElectedTwoPartyPlurality: Plurality() {
                     .filter { it.policy == policy }
                     .forEach { forParty = it.value > BigDecimal.valueOf(0.5) }
 
-            if(outCandidate == null) throw RuntimeException("No candidates with positive utility for voter!")
+            if (outCandidate == null) throw RuntimeException("No candidates with positive utility for voter!")
 
             return PrimaryBallot(outCandidate, forParty)
         }
     }
 
-    class PrimaryBallot(val candidate: Candidate, val forParty: Boolean): Ballot
+    class PrimaryBallot(val candidate: Candidate, val forParty: Boolean) : Ballot
 }

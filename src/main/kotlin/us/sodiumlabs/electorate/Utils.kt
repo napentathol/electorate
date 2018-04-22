@@ -2,7 +2,8 @@ package us.sodiumlabs.electorate
 
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.util.*
+import java.util.Collections
+import java.util.Random
 import java.util.function.BiConsumer
 import java.util.function.BinaryOperator
 import java.util.function.Function
@@ -15,7 +16,7 @@ fun generateRandomBigDecimal(random: Random): BigDecimal {
     return BigDecimal(random.nextInt(1_000_000_000)).divide(BigDecimal(1_000_000_000), PRECISION, RoundingMode.FLOOR)
 }
 
-abstract class StringWrapper(private val s: String): Comparable<StringWrapper> {
+abstract class StringWrapper(private val s: String) : Comparable<StringWrapper> {
     override fun compareTo(other: StringWrapper): Int = s.compareTo(other.s)
 
     override fun hashCode(): Int = s.hashCode()
@@ -59,7 +60,7 @@ class BigDecimalAverageCollector : Collector<BigDecimal, BigDecimalAverageCollec
         }
 
         fun average(): BigDecimal {
-            if(count == BigDecimal.ZERO) throw RuntimeException("Count must not be zero!")
+            if (count == BigDecimal.ZERO) throw RuntimeException("Count must not be zero!")
             return sum.divide(count, PRECISION, RoundingMode.HALF_UP)
         }
 

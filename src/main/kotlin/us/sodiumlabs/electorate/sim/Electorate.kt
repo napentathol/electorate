@@ -7,12 +7,10 @@ import us.sodiumlabs.electorate.BigDecimalAverageCollector
 import us.sodiumlabs.electorate.StringWrapper
 import us.sodiumlabs.electorate.generateRandomBigDecimal
 import java.math.BigDecimal
-import java.util.*
+import java.util.Random
 import java.util.stream.Collectors
 import java.util.stream.IntStream
 import kotlin.collections.HashMap
-
-
 
 fun generateElectorate(random: Random, policies: List<Policy>, electorCount: Int, candidateCount: Int): Electorate {
 
@@ -47,17 +45,17 @@ class Electorate(private val electorate: List<Voter>, val candidates: List<Candi
                 .collect(Collectors.toList())
     }
 
-    fun calculateRegret(candidate: Candidate) : BigDecimal {
+    fun calculateRegret(candidate: Candidate): BigDecimal {
         val utilityMap = HashMap<Candidate, BigDecimal>()
         var maximumUtility = BigDecimal.ZERO
 
         candidates.forEach { c ->
             val utility = calculateCandidateUtility(c)
-            if(utility > maximumUtility) maximumUtility = utility
+            if (utility > maximumUtility) maximumUtility = utility
             utilityMap.put(c, utility)
         }
 
-        return (maximumUtility - utilityMap.getOrElse(candidate, {calculateCandidateUtility(candidate)}))
+        return (maximumUtility - utilityMap.getOrElse(candidate, { calculateCandidateUtility(candidate) }))
                 .max(BigDecimal.ZERO)
     }
 
@@ -113,7 +111,7 @@ class Candidate(stanceList: List<Stance>) {
         stances = ImmutableMap.copyOf(stanceMapBuilder)
     }
 
-    fun getStance(policy: Policy) : Stance {
+    fun getStance(policy: Policy): Stance {
         return stances.getOrDefault(policy, NULL_STANCE)
     }
 
@@ -130,10 +128,10 @@ class Stance(val policy: Policy, val value: BigDecimal)
 
 val NULL_STANCE = Stance(Policy("null"), BigDecimal.valueOf(0.5))
 
-class Policy(s: String): StringWrapper(s)
+class Policy(s: String) : StringWrapper(s)
 
 interface VotingStrategy<B> where B : Ballot {
-    fun accept(voter: Voter, candidates: List<Candidate>) : B
+    fun accept(voter: Voter, candidates: List<Candidate>): B
 }
 
 interface Ballot

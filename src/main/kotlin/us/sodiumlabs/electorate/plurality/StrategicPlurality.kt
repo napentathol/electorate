@@ -24,7 +24,7 @@ open class StrategicPlurality : Plurality() {
 
         ballotCount.clear()
 
-        val ballots = electorate.poll(Plurality.VOTING_STRATEGY, ranking.subList(0,2))
+        val ballots = electorate.poll(Plurality.VOTING_STRATEGY, ranking.subList(0, 2))
 
         ballots.mapTo(ballotCount) { it.candidate }
 

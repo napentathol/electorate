@@ -2,7 +2,13 @@ package us.sodiumlabs.electorate.range
 
 import com.google.common.collect.HashMultiset
 import com.google.common.collect.Multiset
-import us.sodiumlabs.electorate.sim.*
+import us.sodiumlabs.electorate.sim.Ballot
+import us.sodiumlabs.electorate.sim.Candidate
+import us.sodiumlabs.electorate.sim.ElectoralSystem
+import us.sodiumlabs.electorate.sim.ElectoralSystemName
+import us.sodiumlabs.electorate.sim.Electorate
+import us.sodiumlabs.electorate.sim.Voter
+import us.sodiumlabs.electorate.sim.VotingStrategy
 import java.math.BigDecimal
 
 open class RangeVoting : ElectoralSystem {
@@ -27,16 +33,16 @@ open class RangeVoting : ElectoralSystem {
         return SYSTEM_NAME
     }
 
-    class RangeBallot(val candidateMarks: Multiset<Candidate>): Ballot {
+    class RangeBallot(val candidateMarks: Multiset<Candidate>) : Ballot {
         init {
             for (e in candidateMarks.entrySet()) {
-                check(e.count > 0, {"Count must be greater than 0, was ${e.count}"})
-                check(e.count <= MAX_VOTE.toInt(), {"Count must be less than 5, was ${e.count}"})
+                check(e.count > 0, { "Count must be greater than 0, was ${e.count}" })
+                check(e.count <= MAX_VOTE.toInt(), { "Count must be less than 5, was ${e.count}" })
             }
         }
     }
 
-    class RangeVotingStrategy: VotingStrategy<RangeBallot> {
+    class RangeVotingStrategy : VotingStrategy<RangeBallot> {
         override fun accept(voter: Voter, candidates: List<Candidate>): RangeBallot {
             val marks = HashMultiset.create<Candidate>()
 

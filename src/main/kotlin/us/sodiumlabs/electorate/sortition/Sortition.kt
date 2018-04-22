@@ -4,9 +4,9 @@ import us.sodiumlabs.electorate.sim.Candidate
 import us.sodiumlabs.electorate.sim.ElectoralSystem
 import us.sodiumlabs.electorate.sim.ElectoralSystemName
 import us.sodiumlabs.electorate.sim.Electorate
-import java.util.*
+import java.util.Random
 
-open class Sortition(private val random: Random): ElectoralSystem {
+open class Sortition(private val random: Random) : ElectoralSystem {
     companion object {
         val SYSTEM_NAME = ElectoralSystemName("Sortition")
     }
@@ -18,5 +18,4 @@ open class Sortition(private val random: Random): ElectoralSystem {
     override fun getSystemName(): ElectoralSystemName {
         return SYSTEM_NAME
     }
-
 }

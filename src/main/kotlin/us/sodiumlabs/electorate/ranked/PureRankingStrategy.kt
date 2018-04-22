@@ -5,7 +5,7 @@ import us.sodiumlabs.electorate.sim.Candidate
 import us.sodiumlabs.electorate.sim.Voter
 import us.sodiumlabs.electorate.sim.VotingStrategy
 
-class PureRankingStrategy: VotingStrategy<RankedBallot> {
+class PureRankingStrategy : VotingStrategy<RankedBallot> {
     companion object {
         val RANKING_STRATEGY = PureRankingStrategy()
     }

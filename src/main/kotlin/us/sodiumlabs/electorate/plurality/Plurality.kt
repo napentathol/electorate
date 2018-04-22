@@ -1,7 +1,13 @@
 package us.sodiumlabs.electorate.plurality
 
 import com.google.common.collect.HashMultiset
-import us.sodiumlabs.electorate.sim.*
+import us.sodiumlabs.electorate.sim.Ballot
+import us.sodiumlabs.electorate.sim.Candidate
+import us.sodiumlabs.electorate.sim.ElectoralSystem
+import us.sodiumlabs.electorate.sim.ElectoralSystemName
+import us.sodiumlabs.electorate.sim.Electorate
+import us.sodiumlabs.electorate.sim.Voter
+import us.sodiumlabs.electorate.sim.VotingStrategy
 import java.math.BigDecimal
 
 open class Plurality : ElectoralSystem {
@@ -28,20 +34,20 @@ open class Plurality : ElectoralSystem {
             var maximumUtility = BigDecimal.valueOf(-1.0)
             var outCandidate: Candidate? = null
 
-            for(c in candidates) {
+            for (c in candidates) {
                 val utility = voter.calculateCandidateUtility(c)
 
-                if(utility > maximumUtility) {
+                if (utility > maximumUtility) {
                     maximumUtility = utility
                     outCandidate = c
                 }
             }
 
-            if(outCandidate == null) throw RuntimeException("No candidates with positive utility for voter!")
+            if (outCandidate == null) throw RuntimeException("No candidates with positive utility for voter!")
 
             return PluralityBallot(outCandidate)
         }
     }
 
-    class PluralityBallot(val candidate: Candidate): Ballot
+    class PluralityBallot(val candidate: Candidate) : Ballot
 }

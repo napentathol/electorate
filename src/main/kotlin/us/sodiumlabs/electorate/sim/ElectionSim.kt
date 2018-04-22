@@ -94,4 +94,4 @@ interface ElectoralSystem {
     }
 }
 
-class ElectoralSystemName(s: String): StringWrapper(s)
+class ElectoralSystemName(s: String) : StringWrapper(s)
