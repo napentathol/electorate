@@ -3,11 +3,16 @@ package us.sodiumlabs.electorate.sim
 import com.google.common.collect.ImmutableMap
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import us.sodiumlabs.electorate.BigDecimalAverageCollector
 import us.sodiumlabs.electorate.StringWrapper
+import us.sodiumlabs.electorate.generateRandomBigDecimal
+import java.math.BigDecimal
 import java.util.*
 import java.util.stream.Collectors
 import java.util.stream.IntStream
 import kotlin.collections.HashMap
+
+
 
 fun generateElectorate(random: Random, policies: List<Policy>, electorCount: Int, candidateCount: Int): Electorate {
 
@@ -26,7 +31,7 @@ fun generateElectorate(random: Random, policies: List<Policy>, electorCount: Int
 
 private fun generateRandomStances(random: Random, policies: List<Policy>): List<Stance> {
     return policies.stream()
-            .map { p -> Stance(p, random.nextDouble()) }
+            .map { p -> Stance(p, generateRandomBigDecimal(random)) }
             .collect(Collectors.toList())
 }
 
@@ -42,9 +47,9 @@ class Electorate(private val electorate: List<Voter>, val candidates: List<Candi
                 .collect(Collectors.toList())
     }
 
-    fun calculateRegret(candidate: Candidate) : Double {
-        val utilityMap = HashMap<Candidate, Double>()
-        var maximumUtility = 0.0
+    fun calculateRegret(candidate: Candidate) : BigDecimal {
+        val utilityMap = HashMap<Candidate, BigDecimal>()
+        var maximumUtility = BigDecimal.ZERO
 
         candidates.forEach { c ->
             val utility = calculateCandidateUtility(c)
@@ -52,14 +57,14 @@ class Electorate(private val electorate: List<Voter>, val candidates: List<Candi
             utilityMap.put(c, utility)
         }
 
-        return Math.max(maximumUtility - utilityMap.getOrElse(candidate, {calculateCandidateUtility(candidate)}), 0.0)
+        return (maximumUtility - utilityMap.getOrElse(candidate, {calculateCandidateUtility(candidate)}))
+                .max(BigDecimal.ZERO)
     }
 
-    private fun calculateCandidateUtility(candidate: Candidate): Double {
+    private fun calculateCandidateUtility(candidate: Candidate): BigDecimal {
         return electorate.stream()
-                .mapToDouble { v -> v.calculateCandidateUtility(candidate) }
-                .average()
-                .orElseThrow { RuntimeException("Electorate should have at least one voter!") }
+                .map { v -> v.calculateCandidateUtility(candidate) }
+                .collect(BigDecimalAverageCollector())
     }
 
     fun toJson(): JsonObject {
@@ -82,13 +87,12 @@ class Electorate(private val electorate: List<Voter>, val candidates: List<Candi
 }
 
 class Voter(private val stances: List<Stance>) {
-    fun calculateCandidateUtility(candidate: Candidate): Double {
+    fun calculateCandidateUtility(candidate: Candidate): BigDecimal {
         return stances.stream()
-                .mapToDouble { s ->
-                    1.0 - Math.abs(candidate.getStance(s.policy).value - s.value)
+                .map { s ->
+                    BigDecimal.ONE - (candidate.getStance(s.policy).value - s.value).abs()
                 }
-                .average()
-                .orElseThrow { RuntimeException("Voter should have at least one stance!") }
+                .collect(BigDecimalAverageCollector())
     }
 
     fun toJson(): JsonObject {
@@ -122,9 +126,9 @@ class Candidate(stanceList: List<Stance>) {
     }
 }
 
-class Stance(val policy: Policy, val value: Double)
+class Stance(val policy: Policy, val value: BigDecimal)
 
-private val NULL_STANCE = Stance(Policy("null"), 0.5)
+private val NULL_STANCE = Stance(Policy("null"), BigDecimal.valueOf(0.5))
 
 class Policy(s: String): StringWrapper(s)
 

@@ -4,8 +4,13 @@ import com.google.common.collect.ImmutableList
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
+import java.math.BigDecimal
 
 internal class ElectorateTest {
+    companion object {
+        val ONE: BigDecimal = BigDecimal("1.0000000000")
+        val ZERO: BigDecimal = BigDecimal("0E-10")
+    }
 
     @Test
     fun calculateRegret_baseCase() {
@@ -17,8 +22,8 @@ internal class ElectorateTest {
 
         val electorate = Electorate(ImmutableList.of(voter1, voter2), ImmutableList.of(candidate1, candidate2))
 
-        assertEquals(1.0, electorate.calculateRegret(candidate1))
-        assertEquals(0.0, electorate.calculateRegret(candidate2))
+        assertEquals(ONE, electorate.calculateRegret(candidate1))
+        assertEquals(ZERO, electorate.calculateRegret(candidate2))
     }
 
     @Test
@@ -30,7 +35,7 @@ internal class ElectorateTest {
 
         val electorate = Electorate(ImmutableList.of(voter1, voter2), ImmutableList.of(candidate1))
 
-        assertEquals(0.0, electorate.calculateRegret(candidate1))
+        assertEquals(ZERO, electorate.calculateRegret(candidate1))
     }
 
     @Test
@@ -42,8 +47,8 @@ internal class ElectorateTest {
 
         val electorate = Electorate(ImmutableList.of(voter1), ImmutableList.of(candidate1, candidate2))
 
-        assertEquals(1.0, electorate.calculateRegret(candidate1))
-        assertEquals(0.0, electorate.calculateRegret(candidate2))
+        assertEquals(ONE, electorate.calculateRegret(candidate1))
+        assertEquals(ZERO, electorate.calculateRegret(candidate2))
     }
 
     @Test
@@ -56,8 +61,8 @@ internal class ElectorateTest {
 
         val electorate = Electorate(ImmutableList.of(voter1, voter2), ImmutableList.of(candidate1, candidate2))
 
-        assertEquals(0.0, electorate.calculateRegret(candidate1))
-        assertEquals(0.0, electorate.calculateRegret(candidate2))
+        assertEquals(ZERO, electorate.calculateRegret(candidate1))
+        assertEquals(ZERO, electorate.calculateRegret(candidate2))
     }
 
     @Test
@@ -70,8 +75,8 @@ internal class ElectorateTest {
 
         val electorate = Electorate(ImmutableList.of(voter1, voter2), ImmutableList.of(candidate1, candidate2))
 
-        assertEquals(0.0, electorate.calculateRegret(candidate1))
-        assertEquals(0.0, electorate.calculateRegret(candidate2))
+        assertEquals(ZERO, electorate.calculateRegret(candidate1))
+        assertEquals(ZERO, electorate.calculateRegret(candidate2))
     }
 
     @Test
@@ -84,8 +89,8 @@ internal class ElectorateTest {
 
         val electorate = Electorate(ImmutableList.of(voter1, voter2), ImmutableList.of(candidate1, candidate2))
 
-        assertEquals(0.5, electorate.calculateRegret(candidate1))
-        assertEquals(0.0, electorate.calculateRegret(candidate2))
+        assertEquals(BigDecimal("0.5000000000"), electorate.calculateRegret(candidate1))
+        assertEquals(ZERO, electorate.calculateRegret(candidate2))
     }
 
     @Test
@@ -98,8 +103,8 @@ internal class ElectorateTest {
 
         val electorate = Electorate(ImmutableList.of(voter1, voter2), ImmutableList.of(candidate1, candidate2))
 
-        assertEquals(0.5, electorate.calculateRegret(candidate1))
-        assertEquals(0.0, electorate.calculateRegret(candidate2))
+        assertEquals(BigDecimal("0.5000000000"), electorate.calculateRegret(candidate1))
+        assertEquals(ZERO, electorate.calculateRegret(candidate2))
     }
 
     @Test
@@ -112,20 +117,20 @@ internal class ElectorateTest {
 
         val electorate = Electorate(ImmutableList.of(voter1, voter2), ImmutableList.of(candidate1, candidate2))
 
-        assertEquals(0.25, electorate.calculateRegret(candidate1))
-        assertEquals(0.0, electorate.calculateRegret(candidate2))
+        assertEquals(BigDecimal("0.2500000000"), electorate.calculateRegret(candidate1))
+        assertEquals(ZERO, electorate.calculateRegret(candidate2))
     }
 
     private fun createVoter(issue1: Double, issue2: Double): Voter {
         return Voter(ImmutableList.of(
-                Stance(Policy("Issue1"), issue1),
-                Stance(Policy("Issue2"), issue2)))
+                Stance(Policy("Issue1"), BigDecimal.valueOf(issue1)),
+                Stance(Policy("Issue2"), BigDecimal.valueOf(issue2))))
     }
 
     private fun createCandidate(issue1: Double, issue2: Double): Candidate {
         return Candidate(ImmutableList.of(
-                Stance(Policy("Issue1"), issue1),
-                Stance(Policy("Issue2"), issue2)))
+                Stance(Policy("Issue1"), BigDecimal.valueOf(issue1)),
+                Stance(Policy("Issue2"), BigDecimal.valueOf(issue2))))
     }
 
 }

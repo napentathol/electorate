@@ -2,6 +2,7 @@ package us.sodiumlabs.electorate.plurality
 
 import com.google.common.collect.HashMultiset
 import us.sodiumlabs.electorate.sim.*
+import java.math.BigDecimal
 
 open class Plurality : ElectoralSystem {
     companion object {
@@ -24,7 +25,7 @@ open class Plurality : ElectoralSystem {
 
     class PluralityVotingStrategy : VotingStrategy<PluralityBallot> {
         override fun accept(voter: Voter, candidates: List<Candidate>): PluralityBallot {
-            var maximumUtility = -1.0
+            var maximumUtility = BigDecimal.valueOf(-1.0)
             var outCandidate: Candidate? = null
 
             for(c in candidates) {

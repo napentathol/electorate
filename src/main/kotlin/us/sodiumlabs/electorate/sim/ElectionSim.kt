@@ -6,11 +6,13 @@ import com.google.common.collect.Multiset
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import us.sodiumlabs.electorate.BigDecimalAverageCollector
 import us.sodiumlabs.electorate.StringWrapper
 import java.io.FileWriter
+import java.math.BigDecimal
 
 class ElectionSim(private val electoralSystems: List<ElectoralSystem>) {
-    private val regretMatrix: Multimap<ElectoralSystemName, Double> = HashMultimap.create()
+    private val regretMatrix: Multimap<ElectoralSystemName, BigDecimal> = HashMultimap.create()
 
     private val seenElectorates = ArrayList<Electorate>()
 
@@ -62,9 +64,7 @@ class ElectionSim(private val electoralSystems: List<ElectoralSystem>) {
         val out = JsonObject()
 
         out.addProperty("mean", regretMatrix.get(name).stream()
-                .mapToDouble { d -> d }
-                .average()
-                .orElseThrow { RuntimeException("Electoral system never tested: $name!") })
+                .collect(BigDecimalAverageCollector()))
 
         return out
     }

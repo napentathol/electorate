@@ -3,12 +3,13 @@ package us.sodiumlabs.electorate.range
 import com.google.common.collect.HashMultiset
 import com.google.common.collect.Multiset
 import us.sodiumlabs.electorate.sim.*
+import java.math.BigDecimal
 
 open class RangeVoting : ElectoralSystem {
     companion object {
         val VOTING_STRATEGY = RangeVotingStrategy()
         val SYSTEM_NAME = ElectoralSystemName("Range Voting")
-        val MAX_VOTE = 5
+        val MAX_VOTE: BigDecimal = BigDecimal.valueOf(5)
     }
 
     override fun produceCandidate(electorate: Electorate): Candidate {
@@ -30,7 +31,7 @@ open class RangeVoting : ElectoralSystem {
         init {
             for (e in candidateMarks.entrySet()) {
                 check(e.count > 0, {"Count must be greater than 0, was ${e.count}"})
-                check(e.count <= MAX_VOTE, {"Count must be less than 5, was ${e.count}"})
+                check(e.count <= MAX_VOTE.toInt(), {"Count must be less than 5, was ${e.count}"})
             }
         }
     }
@@ -40,7 +41,7 @@ open class RangeVoting : ElectoralSystem {
             val marks = HashMultiset.create<Candidate>()
 
             candidates.forEach {
-                marks.add(it, (voter.calculateCandidateUtility(it) * (MAX_VOTE + 1)).toInt())
+                marks.add(it, (voter.calculateCandidateUtility(it) * (MAX_VOTE + BigDecimal.ONE)).toInt())
             }
 
             return RangeBallot(marks)
