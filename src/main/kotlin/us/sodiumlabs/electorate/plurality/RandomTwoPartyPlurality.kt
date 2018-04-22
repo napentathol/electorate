@@ -7,9 +7,9 @@ import us.sodiumlabs.electorate.sim.ElectoralSystemName
 import us.sodiumlabs.electorate.sim.Electorate
 import java.util.*
 
-open class TwoPartyPlurality(val random: Random): Plurality() {
+open class RandomTwoPartyPlurality(val random: Random): Plurality() {
     companion object {
-        val SYSTEM_NAME = ElectoralSystemName("Two Party Plurality")
+        val SYSTEM_NAME = ElectoralSystemName("Random Two Party Plurality")
     }
 
     override fun getSystemName(): ElectoralSystemName {
