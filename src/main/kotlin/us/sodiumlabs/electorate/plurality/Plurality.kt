@@ -15,11 +15,7 @@ open class Plurality : ElectoralSystem {
 
         ballots.mapTo(ballotCount) { it.candidate }
 
-        return ballotCount.entrySet().stream()
-                .sorted { o1, o2 -> o2.count - o1.count }
-                .findFirst()
-                .orElseThrow { RuntimeException("There should be a candidate with votes!") }
-                .element
+        return findFirst(ballotCount)
     }
 
     override fun getSystemName(): ElectoralSystemName {

@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList
 import us.sodiumlabs.electorate.plurality.Plurality
 import us.sodiumlabs.electorate.plurality.StrategicPlurality
 import us.sodiumlabs.electorate.plurality.TwoPartyPlurality
+import us.sodiumlabs.electorate.range.RangeVoting
 import us.sodiumlabs.electorate.sim.ElectionSim
 import us.sodiumlabs.electorate.sim.Policy
 import us.sodiumlabs.electorate.sim.generateElectorate
@@ -25,7 +26,8 @@ fun main(args: Array<String>) {
         Sortition(electoralRandom),
         Plurality(),
         StrategicPlurality(),
-        TwoPartyPlurality(electoralRandom)
+        TwoPartyPlurality(electoralRandom),
+        RangeVoting()
     ))
 
     for( i in 1..100 ) {
