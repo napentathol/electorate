@@ -8,7 +8,7 @@ import kotlin.streams.toList
 
 open class StrategicPlurality : Plurality() {
     companion object {
-        val SYSTEM_NAME = ElectoralSystemName("Strategic Plurality")
+        val SYSTEM_NAME = ElectoralSystemName("Plurality - Strategic")
     }
 
     override fun getSystemName(): ElectoralSystemName {

@@ -40,21 +40,21 @@ class ApprovalVoting(private val approvalVotingStrategy: ApprovalVotingStrategy)
     }
 
     class ThresholdApprovalVotingStrategy(private val threshold: BigDecimal): ApprovalVotingStrategy() {
-        override fun getName(): ElectoralSystemName = ElectoralSystemName("Approval Voting Set Threshold (t=$threshold)")
+        override fun getName(): ElectoralSystemName = ElectoralSystemName("Approval - Set Threshold (t=$threshold)")
 
         override fun accept(voter: Voter, candidates: List<Candidate>): ApprovalBallot =
             internalAccept(voter, candidates, threshold)
     }
 
     class RandomThresholdApprovalVotingStrategy(private val random: Random): ApprovalVotingStrategy() {
-        override fun getName(): ElectoralSystemName = ElectoralSystemName("Approval Voting Random Threshold")
+        override fun getName(): ElectoralSystemName = ElectoralSystemName("Approval - Random Threshold")
 
         override fun accept(voter: Voter, candidates: List<Candidate>): ApprovalBallot =
             internalAccept(voter, candidates, generateRandomBigDecimal(random))
     }
 
     class MeanThresholdAppovalVotingStrategy(): ApprovalVotingStrategy() {
-        override fun getName(): ElectoralSystemName = ElectoralSystemName("Approval Voting Mean Threshold")
+        override fun getName(): ElectoralSystemName = ElectoralSystemName("Approval - Mean Threshold")
 
         override fun accept(voter: Voter, candidates: List<Candidate>): ApprovalBallot {
             val threshold = candidates.stream()

@@ -9,7 +9,7 @@ import java.util.*
 
 open class RandomTwoPartyPlurality(val random: Random): Plurality() {
     companion object {
-        val SYSTEM_NAME = ElectoralSystemName("Random Two Party Plurality")
+        val SYSTEM_NAME = ElectoralSystemName("Plurality - Random Two Party")
     }
 
     override fun getSystemName(): ElectoralSystemName {

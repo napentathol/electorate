@@ -8,7 +8,7 @@ import java.math.BigDecimal
 open class RangeVoting : ElectoralSystem {
     companion object {
         val VOTING_STRATEGY = RangeVotingStrategy()
-        val SYSTEM_NAME = ElectoralSystemName("Range Voting")
+        val SYSTEM_NAME = ElectoralSystemName("Range - Pure")
         val MAX_VOTE: BigDecimal = BigDecimal.valueOf(5)
     }
 

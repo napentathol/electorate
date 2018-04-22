@@ -8,7 +8,7 @@ import java.math.BigDecimal
 
 class ElectedTwoPartyPlurality: Plurality() {
     companion object {
-        val SYSTEM_NAME = ElectoralSystemName("Elected Two Party Plurality")
+        val SYSTEM_NAME = ElectoralSystemName("Plurality - Elected Two Party")
         val CONTENTION_STRATEGY = ContentionVotingStrategy()
     }
 

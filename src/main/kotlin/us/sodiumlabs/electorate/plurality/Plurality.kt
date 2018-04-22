@@ -7,7 +7,7 @@ import java.math.BigDecimal
 open class Plurality : ElectoralSystem {
     companion object {
         val VOTING_STRATEGY = PluralityVotingStrategy()
-        val SYSTEM_NAME = ElectoralSystemName("Plurality")
+        val SYSTEM_NAME = ElectoralSystemName("Plurality - Pure")
     }
 
     override fun produceCandidate(electorate: Electorate): Candidate {
