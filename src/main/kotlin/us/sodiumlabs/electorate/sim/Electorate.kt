@@ -33,13 +33,13 @@ private fun generateRandomStances(random: Random, policies: List<Policy>): List<
             .collect(Collectors.toList())
 }
 
-class Electorate(private val electorate: List<Voter>, val candidates: List<Candidate>) {
+open class Electorate(private val electorate: List<Voter>, val candidates: List<Candidate>) {
 
-    fun <B> poll(votingStrategy: VotingStrategy<B>): List<B> where B: Ballot {
+    open fun <B> poll(votingStrategy: VotingStrategy<B>): List<B> where B: Ballot {
         return poll(votingStrategy, candidates)
     }
 
-    fun <B> poll(votingStrategy: VotingStrategy<B>, overrideCandidates: List<Candidate>): List<B> where B: Ballot {
+    open fun <B> poll(votingStrategy: VotingStrategy<B>, overrideCandidates: List<Candidate>): List<B> where B: Ballot {
         return electorate.stream()
                 .map { t: Voter -> votingStrategy.accept(t, overrideCandidates) }
                 .collect(Collectors.toList())

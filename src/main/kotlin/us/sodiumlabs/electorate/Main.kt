@@ -9,6 +9,8 @@ import us.sodiumlabs.electorate.plurality.RandomTwoPartyPlurality
 import us.sodiumlabs.electorate.range.RangeVoting
 import us.sodiumlabs.electorate.range.StarVoting
 import us.sodiumlabs.electorate.ranked.InstantRunnoff
+import us.sodiumlabs.electorate.ranked.RankedBallot
+import us.sodiumlabs.electorate.ranked.RankedPairs
 import us.sodiumlabs.electorate.sim.ElectionSim
 import us.sodiumlabs.electorate.sim.Policy
 import us.sodiumlabs.electorate.sim.generateElectorate
@@ -40,6 +42,7 @@ fun main(args: Array<String>) {
         StarVoting(),
         // Ranked elections
         InstantRunnoff(),
+        RankedPairs(),
         // Approval elections
         ApprovalVoting(ApprovalVoting.ThresholdApprovalVotingStrategy(BigDecimal.valueOf(0.5))),
         ApprovalVoting(ApprovalVoting.ThresholdApprovalVotingStrategy(BigDecimal.valueOf(0.75))),

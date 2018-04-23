@@ -7,6 +7,7 @@ buildscript {
     ext.gson_version = '2.8.2'
 
     ext.junit_version = '5.2.0-M1'
+    ext.mockito_version = '1.5.0'
 
     ext.ktlint_verstion = '0.22.0'
 
@@ -35,6 +36,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
 
     testCompile "org.junit.jupiter:junit-jupiter-api:$junit_version"
+    testCompile "com.nhaarman:mockito-kotlin:$mockito_version"
 
     ktlint "com.github.shyiko:ktlint:$ktlint_verstion"
 }
