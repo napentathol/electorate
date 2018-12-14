@@ -121,10 +121,59 @@ internal class ElectorateTest {
         assertEquals(ZERO, electorate.calculateRegret(candidate2))
     }
 
-    private fun createVoter(issue1: Double, issue2: Double): Voter {
+    @Test
+    fun generateCandidatesFromVoters_allRunning() {
+        val voter1 = createVoter(0.0, 1.0, 1.0)
+        val voter2 = createVoter(1.0, 0.0, 0.99)
+        val voter3 = createVoter(0.5, 0.5, 0.98)
+
+        val voters = ImmutableList.of(voter1, voter2, voter3)
+
+        val candidates = generateCandidatesFromVoters(voters, 3)
+
+        assertEquals(3, candidates.size)
+        assertEquals(Candidate(voter1), candidates[0])
+        assertEquals(Candidate(voter2), candidates[1])
+        assertEquals(Candidate(voter3), candidates[2])
+    }
+
+    @Test
+    fun generateCandidatesFromVoters_oneNotRunningLimited() {
+        val voter1 = createVoter(0.0, 1.0, 1.0)
+        val voter2 = createVoter(1.0, 0.0, 0.99)
+        val voter3 = createVoter(0.5, 0.5, 0.98)
+
+        val voters = ImmutableList.of(voter1, voter2, voter3)
+
+        val candidates = generateCandidatesFromVoters(voters, 2)
+
+        assertEquals(2, candidates.size)
+        assertEquals(Candidate(voter1), candidates[0])
+        assertEquals(Candidate(voter2), candidates[1])
+    }
+
+    @Test
+    fun generateCandidatesFromVoters_oneNotRunningSatisfiedWithCandidate() {
+        val voter1 = createVoter(0.0, 1.0, 1.0)
+        val voter2 = createVoter(1.0, 0.0, 0.99)
+        val voter3 = createVoter(0.0, 1.0, 0.98)
+
+        val voters = ImmutableList.of(voter1, voter2, voter3)
+
+        val candidates = generateCandidatesFromVoters(voters, 3)
+
+        assertEquals(2, candidates.size)
+        assertEquals(Candidate(voter1), candidates[0])
+        assertEquals(Candidate(voter2), candidates[1])
+    }
+
+    private fun createVoter(issue1: Double, issue2: Double): Voter = createVoter(issue1, issue2, 0.0)
+
+    private fun createVoter(issue1: Double, issue2: Double, runningPotential: Double): Voter {
         return Voter(ImmutableList.of(
                 Stance(Policy("Issue1"), BigDecimal.valueOf(issue1)),
-                Stance(Policy("Issue2"), BigDecimal.valueOf(issue2))))
+                Stance(Policy("Issue2"), BigDecimal.valueOf(issue2))),
+                BigDecimal(runningPotential))
     }
 
     private fun createCandidate(issue1: Double, issue2: Double): Candidate {

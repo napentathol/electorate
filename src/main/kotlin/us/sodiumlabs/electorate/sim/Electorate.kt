@@ -5,26 +5,44 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import us.sodiumlabs.electorate.BigDecimalAverageCollector
 import us.sodiumlabs.electorate.StringWrapper
+import us.sodiumlabs.electorate.Tuple
 import us.sodiumlabs.electorate.generateRandomBigDecimal
 import java.math.BigDecimal
+import java.util.Objects
+import java.util.Optional
 import java.util.Random
 import java.util.stream.Collectors
 import java.util.stream.IntStream
 import kotlin.collections.HashMap
 
-fun generateElectorate(random: Random, policies: List<Policy>, electorCount: Int, candidateCount: Int): Electorate {
+fun generateElectorate(random: Random, policies: List<Policy>, electorCount: Int, maxCandidateCount: Int): Electorate {
 
     val voterRandom = Random(random.nextLong())
     val voters = IntStream.range(0, electorCount)
-            .mapToObj { Voter(generateRandomStances(Random(voterRandom.nextLong()), policies)) }
+            .mapToObj { Voter(generateRandomStances(Random(voterRandom.nextLong()), policies), generateRandomBigDecimal(voterRandom)) }
             .collect(Collectors.toList())
 
-    val candidateRandom = Random(random.nextLong())
-    val candidates = IntStream.range(0, candidateCount)
-            .mapToObj { Candidate(generateRandomStances(Random(candidateRandom.nextLong()), policies)) }
-            .collect(Collectors.toList())
+    val candidates = generateCandidatesFromVoters(voters, maxCandidateCount)
 
     return Electorate(voters, candidates)
+}
+
+fun generateCandidatesFromVoters(voters: List<Voter>, maxCandidateCount: Int): List<Candidate> {
+    val candidates = ArrayList<Candidate>()
+    for (i in 1..maxCandidateCount) {
+        val potentialCandidate = getVoterMostLikelyToRun(voters, candidates)
+        if(potentialCandidate.isEmpty) break
+        candidates.add(Candidate(potentialCandidate.get()))
+    }
+    return candidates
+}
+
+private fun getVoterMostLikelyToRun(voters: List<Voter>, candidates: List<Candidate>): Optional<Voter> {
+    return voters.stream()
+            .map { v -> Tuple(v, v.calculateCurrentRunningPropensity(candidates)) }
+            .filter { t -> t.t > BigDecimal.ZERO }
+            .max { t1, t2 -> t1.t.compareTo(t2.t) }
+            .map { t -> t.s }
 }
 
 private fun generateRandomStances(random: Random, policies: List<Policy>): List<Stance> {
@@ -84,13 +102,24 @@ open class Electorate(private val electorate: List<Voter>, val candidates: List<
     }
 }
 
-class Voter(val stances: List<Stance>) {
+class Voter(val stances: List<Stance>, private val runningPropensity: BigDecimal) {
     fun calculateCandidateUtility(candidate: Candidate): BigDecimal {
         return stances.stream()
                 .map { s ->
                     BigDecimal.ONE - (candidate.getStance(s.policy).value - s.value).abs()
                 }
                 .collect(BigDecimalAverageCollector())
+    }
+
+    fun calculateCurrentRunningPropensity(candidates: List<Candidate>): BigDecimal {
+        return runningPropensity - calculateMaxCandidateUtility(candidates)
+    }
+
+    private fun calculateMaxCandidateUtility(candidates: List<Candidate>): BigDecimal {
+        return candidates.stream()
+                .map { c -> calculateCandidateUtility(c) }
+                .max { o1, o2 -> o1.compareTo(o2) }
+                .orElse(BigDecimal.ZERO)
     }
 
     fun toJson(): JsonObject {
@@ -105,6 +134,8 @@ class Voter(val stances: List<Stance>) {
 class Candidate(stanceList: List<Stance>) {
     private val stances: Map<Policy, Stance>
 
+    constructor(voter: Voter): this(voter.stances)
+
     init {
         val stanceMapBuilder = HashMap<Policy, Stance>()
         stanceList.forEach { s -> stanceMapBuilder.put(s.policy, s) }
@@ -113,6 +144,24 @@ class Candidate(stanceList: List<Stance>) {
 
     fun getStance(policy: Policy): Stance {
         return stances.getOrDefault(policy, NULL_STANCE)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if(other !is Candidate) return false
+
+        for(entry in stances.entries) {
+            if(!other.stances.containsKey(entry.key) || other.stances[entry.key] != entry.value) return false
+        }
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return Objects.hash(stances)
+    }
+
+    override fun toString(): String {
+        return toJson().toString()
     }
 
     fun toJson(): JsonObject {
