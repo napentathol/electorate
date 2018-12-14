@@ -7,7 +7,7 @@ import us.sodiumlabs.electorate.sim.ElectoralSystemName
 import us.sodiumlabs.electorate.sim.Electorate
 import java.util.Random
 
-open class RandomTwoPartyPlurality(val random: Random) : Plurality() {
+open class RandomTwoPartyPlurality(private val random: Random) : Plurality() {
     companion object {
         val SYSTEM_NAME = ElectoralSystemName("Plurality - Random Two Party")
     }

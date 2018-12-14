@@ -70,10 +70,10 @@ open class Electorate(private val electorate: List<Voter>, val candidates: List<
         candidates.forEach { c ->
             val utility = calculateCandidateUtility(c)
             if (utility > maximumUtility) maximumUtility = utility
-            utilityMap.put(c, utility)
+            utilityMap[c] = utility
         }
 
-        return (maximumUtility - utilityMap.getOrElse(candidate, { calculateCandidateUtility(candidate) }))
+        return (maximumUtility - utilityMap.getOrElse(candidate) { calculateCandidateUtility(candidate) })
                 .max(BigDecimal.ZERO)
     }
 
@@ -138,7 +138,7 @@ class Candidate(stanceList: List<Stance>) {
 
     init {
         val stanceMapBuilder = HashMap<Policy, Stance>()
-        stanceList.forEach { s -> stanceMapBuilder.put(s.policy, s) }
+        stanceList.forEach { s -> stanceMapBuilder[s.policy] = s }
         stances = ImmutableMap.copyOf(stanceMapBuilder)
     }
 

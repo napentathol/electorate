@@ -33,7 +33,7 @@ class ApprovalVoting(private val approvalVotingStrategy: ApprovalVotingStrategy)
 
     class ApprovalBallot(val approvalMap: Map<Candidate, Boolean>) : Ballot
 
-    abstract class ApprovalVotingStrategy() : VotingStrategy<ApprovalBallot> {
+    abstract class ApprovalVotingStrategy : VotingStrategy<ApprovalBallot> {
         protected fun internalAccept(voter: Voter, candidates: List<Candidate>, threshold: BigDecimal): ApprovalBallot {
             val mapBuilder = ImmutableMap.builder<Candidate, Boolean>()
             for (c in candidates) {
@@ -59,7 +59,7 @@ class ApprovalVoting(private val approvalVotingStrategy: ApprovalVotingStrategy)
             internalAccept(voter, candidates, generateRandomBigDecimal(random))
     }
 
-    class MeanThresholdAppovalVotingStrategy() : ApprovalVotingStrategy() {
+    class MeanThresholdAppovalVotingStrategy : ApprovalVotingStrategy() {
         override fun getName(): ElectoralSystemName = ElectoralSystemName("Approval - Mean Threshold")
 
         override fun accept(voter: Voter, candidates: List<Candidate>): ApprovalBallot {

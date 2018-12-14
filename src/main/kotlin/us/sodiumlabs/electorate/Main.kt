@@ -4,12 +4,11 @@ import com.google.common.collect.ImmutableList
 import us.sodiumlabs.electorate.approval.ApprovalVoting
 import us.sodiumlabs.electorate.plurality.ElectedTwoPartyPlurality
 import us.sodiumlabs.electorate.plurality.Plurality
-import us.sodiumlabs.electorate.plurality.StrategicPlurality
 import us.sodiumlabs.electorate.plurality.RandomTwoPartyPlurality
+import us.sodiumlabs.electorate.plurality.StrategicPlurality
 import us.sodiumlabs.electorate.range.RangeVoting
 import us.sodiumlabs.electorate.range.StarVoting
 import us.sodiumlabs.electorate.ranked.InstantRunnoff
-import us.sodiumlabs.electorate.ranked.RankedBallot
 import us.sodiumlabs.electorate.ranked.RankedPairs
 import us.sodiumlabs.electorate.sim.ElectionSim
 import us.sodiumlabs.electorate.sim.Policy

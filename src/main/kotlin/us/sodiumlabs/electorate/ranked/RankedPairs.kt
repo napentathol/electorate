@@ -61,7 +61,7 @@ class RankedPairs : ElectoralSystem {
                 node
             }
 
-            nodeA.addVertex(RankedPairGraphVertex(nodeA, nodeB, weight!!))
+            nodeA.addVertex(RankedPairGraphVertex(nodeA, nodeB))
         }
 
         fun findHeadCandidate(): Candidate = rankedPairGraphNodes.first().findHeadNode().value
@@ -103,5 +103,5 @@ class RankedPairs : ElectoralSystem {
         }
     }
 
-    class RankedPairGraphVertex(val a: RankedPairGraphNode, val b: RankedPairGraphNode, val weight: Int)
+    class RankedPairGraphVertex(val a: RankedPairGraphNode, val b: RankedPairGraphNode)
 }

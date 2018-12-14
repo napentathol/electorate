@@ -10,7 +10,7 @@ import java.util.function.Function
 import java.util.function.Supplier
 import java.util.stream.Collector
 
-val PRECISION = 10
+const val PRECISION = 10
 
 fun generateRandomBigDecimal(random: Random): BigDecimal {
     return BigDecimal(random.nextInt(1_000_000_000)).divide(BigDecimal(1_000_000_000), PRECISION, RoundingMode.FLOOR)

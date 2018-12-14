@@ -36,8 +36,8 @@ open class RangeVoting : ElectoralSystem {
     class RangeBallot(val candidateMarks: Multiset<Candidate>) : Ballot {
         init {
             for (e in candidateMarks.entrySet()) {
-                check(e.count >= 0, { "Count must be greater than or equal to 0, was ${e.count}" })
-                check(e.count <= MAX_VOTE.toInt(), { "Count must be less than or equal to 5, was ${e.count}" })
+                check(e.count >= 0) { "Count must be greater than or equal to 0, was ${e.count}" }
+                check(e.count <= MAX_VOTE.toInt()) { "Count must be less than or equal to 5, was ${e.count}" }
             }
         }
     }

@@ -38,7 +38,7 @@ class ElectedTwoPartyPlurality : Plurality() {
                     val s1 = value.value
                     val s2 = v2.stances.getOrDefault(key, NULL_STANCE).value
 
-                    policyContentionMap.compute(key, { _, it ->
+                    policyContentionMap.compute(key) { _, it ->
                         val diff = (s1 - s2).abs()
 
                         if (it == null) {
@@ -46,20 +46,20 @@ class ElectedTwoPartyPlurality : Plurality() {
                         } else {
                             it + diff
                         }
-                    })
+                    }
                 }
             }
         }
 
         val electedPolicy = policyContentionMap.entries.stream()
-                .reduce({ a, b ->
+                .reduce { a, b ->
                     if (a.value > b.value) {
                         a
                     } else {
                         b
                     }
-                })
-                .orElseThrow({ RuntimeException("Should elect a policy!") })
+                }
+                .orElseThrow { RuntimeException("Should elect a policy!") }
                 .key
 
         // Run Primaries based on the contentious policy.
@@ -97,7 +97,7 @@ class ElectedTwoPartyPlurality : Plurality() {
 
         init {
             val stanceInit = HashMap<Policy, Stance>()
-            stanceList.forEach { stanceInit.put(it.policy, it) }
+            stanceList.forEach { stanceInit[it.policy] = it }
             stances = ImmutableMap.copyOf(stanceInit)
         }
     }
