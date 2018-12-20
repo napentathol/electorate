@@ -63,18 +63,23 @@ open class Electorate(private val electorate: List<Voter>, val candidates: List<
                 .collect(Collectors.toList())
     }
 
-    fun calculateRegret(candidate: Candidate): BigDecimal {
+    fun calculateRegret(candidate: Candidate): RegretMetrics {
         val utilityMap = HashMap<Candidate, BigDecimal>()
         var maximumUtility = BigDecimal.ZERO
+        var minimumUtility = BigDecimal.ONE
 
         candidates.forEach { c ->
             val utility = calculateCandidateUtility(c)
             if (utility > maximumUtility) maximumUtility = utility
+            if (utility < minimumUtility) minimumUtility = utility
             utilityMap[c] = utility
         }
 
-        return (maximumUtility - utilityMap.getOrElse(candidate) { calculateCandidateUtility(candidate) })
-                .max(BigDecimal.ZERO)
+        val rawUtility = utilityMap.getOrElse(candidate) { calculateCandidateUtility(candidate) }
+        val regret = (maximumUtility - rawUtility).max(BigDecimal.ZERO)
+        val normalizedRegret = (regret / (maximumUtility - minimumUtility)).min(BigDecimal.ONE).max(BigDecimal.ZERO)
+
+        return RegretMetrics(rawUtility, regret, normalizedRegret)
     }
 
     private fun calculateCandidateUtility(candidate: Candidate): BigDecimal {
@@ -85,14 +90,10 @@ open class Electorate(private val electorate: List<Voter>, val candidates: List<
 
     fun toJson(): JsonObject {
         val outElectorate = JsonArray()
-        electorate.forEach { v ->
-            outElectorate.add(v.toJson())
-        }
+        electorate.forEach { v -> outElectorate.add(v.toJson()) }
 
         val outCandidates = JsonArray()
-        candidates.forEach { c ->
-            outCandidates.add(c.toJson())
-        }
+        candidates.forEach { c -> outCandidates.add(c.toJson()) }
 
         val out = JsonObject()
         out.add("electorate", outElectorate)
@@ -105,9 +106,7 @@ open class Electorate(private val electorate: List<Voter>, val candidates: List<
 class Voter(val stances: List<Stance>, private val runningPropensity: BigDecimal) {
     fun calculateCandidateUtility(candidate: Candidate): BigDecimal {
         return stances.stream()
-                .map { s ->
-                    BigDecimal.ONE - (candidate.getStance(s.policy).value - s.value).abs()
-                }
+                .map { s -> BigDecimal.ONE - (candidate.getStance(s.policy).value - s.value).abs() }
                 .collect(BigDecimalAverageCollector())
     }
 
@@ -166,9 +165,7 @@ class Candidate(stanceList: List<Stance>) {
 
     fun toJson(): JsonObject {
         val out = JsonObject()
-        stances.forEach { s ->
-            out.addProperty(s.key.toString(), s.value.value)
-        }
+        stances.forEach { s -> out.addProperty(s.key.toString(), s.value.value) }
         return out
     }
 }

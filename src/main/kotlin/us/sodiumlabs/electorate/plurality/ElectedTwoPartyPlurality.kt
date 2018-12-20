@@ -104,7 +104,7 @@ class ElectedTwoPartyPlurality : Plurality() {
 
     class PrimaryVotingStrategy(private val policy: Policy) : VotingStrategy<PrimaryBallot> {
         override fun accept(voter: Voter, candidates: List<Candidate>): PrimaryBallot {
-            var maximumUtility = BigDecimal.valueOf(-1.0)
+            var maximumUtility = BigDecimal.ZERO
             var outCandidate: Candidate? = null
 
             for (c in candidates) {

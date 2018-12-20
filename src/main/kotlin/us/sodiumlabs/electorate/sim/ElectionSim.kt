@@ -1,5 +1,6 @@
 package us.sodiumlabs.electorate.sim
 
+import com.google.common.base.Strings
 import com.google.common.collect.HashMultimap
 import com.google.common.collect.Multimap
 import com.google.common.collect.Multiset
@@ -13,7 +14,7 @@ import java.math.BigDecimal
 import kotlin.streams.toList
 
 class ElectionSim(private val electoralSystems: List<ElectoralSystem>) {
-    private val regretMatrix: Multimap<ElectoralSystemName, BigDecimal> = HashMultimap.create()
+    private val regretMatrix: Multimap<ElectoralSystemName, RegretMetrics> = HashMultimap.create()
 
     private val seenElectorates = ArrayList<Electorate>()
 
@@ -22,7 +23,7 @@ class ElectionSim(private val electoralSystems: List<ElectoralSystem>) {
         seenElectorates.add(electorate)
         electoralSystems.forEach { e ->
             val regret = electorate.calculateRegret(e.produceCandidate(electorate))
-            println("Regret for ${e.getSystemName()}: $regret")
+            println("${Strings.padEnd("Regret for ${e.getSystemName()}: ", 50, ' ')}$regret")
             regretMatrix.put(e.getSystemName(), regret)
         }
         println()
@@ -33,29 +34,20 @@ class ElectionSim(private val electoralSystems: List<ElectoralSystem>) {
             val gson = GsonBuilder().create()
             gson.toJson(toJson(), writer)
         }
-
-        val prettyGson = GsonBuilder().setPrettyPrinting().create()
-
-        val regretStats = JsonObject()
         regretMatrix.keySet().stream()
                 .sorted()
                 .forEach { k ->
-                    regretStats.add(k.toString(), regretStatsToJson(k))
+                    println(RegretStatistics(k, regretMatrix.get(k)).toString())
+                    println()
                 }
-
-        println(prettyGson.toJson(regretStats))
     }
 
     private fun toJson(): JsonObject {
         val seenElectoratesOut = JsonArray()
-        seenElectorates.forEach { e ->
-            seenElectoratesOut.add(e.toJson())
-        }
+        seenElectorates.forEach { e -> seenElectoratesOut.add(e.toJson()) }
 
         val regretStats = JsonObject()
-        regretMatrix.keySet().forEach { k ->
-            regretStats.add(k.toString(), regretStatsToJson(k))
-        }
+        regretMatrix.keySet().forEach { k -> regretStats.add(k.toString(), regretStatsToJson(k)) }
 
         val out = JsonObject()
         out.add("seenElectorates", seenElectoratesOut)
@@ -66,7 +58,14 @@ class ElectionSim(private val electoralSystems: List<ElectoralSystem>) {
     private fun regretStatsToJson(name: ElectoralSystemName): JsonObject {
         val out = JsonObject()
 
-        out.addProperty("mean", regretMatrix.get(name).stream()
+        out.addProperty("mean normalized regret", regretMatrix.get(name).stream()
+                .map { m -> m.normalizedRegret }
+                .collect(BigDecimalAverageCollector()))
+        out.addProperty("mean regret", regretMatrix.get(name).stream()
+                .map { m -> m.regret }
+                .collect(BigDecimalAverageCollector()))
+        out.addProperty("mean raw utility", regretMatrix.get(name).stream()
+                .map { m -> m.rawUtility }
                 .collect(BigDecimalAverageCollector()))
 
         return out
