@@ -5,12 +5,17 @@ import us.sodiumlabs.electorate.BigDecimalAverageCollector
 import java.math.BigDecimal
 import java.util.function.Function
 
-
-class RegretMetrics(val rawUtility: BigDecimal, val regret: BigDecimal, val normalizedRegret: BigDecimal) {
+open class RegretMetrics(val rawUtility: BigDecimal, val regret: BigDecimal, val normalizedRegret: BigDecimal) {
     override fun toString(): String {
         return "raw utility: ${padBigDecimal(rawUtility)} " +
                 "regret: ${padBigDecimal(regret)} " +
                 "normalized regret: $normalizedRegret"
+    }
+}
+
+class IndeterminateRegretMetrics: RegretMetrics(BigDecimal.ZERO, BigDecimal.ONE, BigDecimal.ONE) {
+    override fun toString(): String {
+        return "election was indeterminate"
     }
 }
 
@@ -19,12 +24,20 @@ class RegretStatistics {
     private val rawUtilityStatistics: Statistics
     private val regretStatistics: Statistics
     private val normalizedRegretStatistics: Statistics
+    private val indeterminateFraction: BigDecimal
 
     constructor(name: ElectoralSystemName, regretMetrics: Collection<RegretMetrics>) {
         this.name = name
         rawUtilityStatistics = Statistics(regretMetrics, Function { r -> r.rawUtility })
         regretStatistics = Statistics(regretMetrics, Function { r -> r.regret })
         normalizedRegretStatistics = Statistics(regretMetrics, Function { r -> r.normalizedRegret })
+        var indeterminate = 0
+        for(r in regretMetrics) {
+            if(r is IndeterminateRegretMetrics) {
+                indeterminate++
+            }
+        }
+        indeterminateFraction = BigDecimal(indeterminate).divide(BigDecimal(regretMetrics.size))
     }
 
     override fun toString(): String {
@@ -34,7 +47,9 @@ class RegretStatistics {
                 "== regret ==\n" +
                 "$regretStatistics\n" +
                 "== normalized regret ==\n" +
-                "$normalizedRegretStatistics"
+                "$normalizedRegretStatistics\n" +
+                "== indeterminate fraction ==\n" +
+                indeterminateFraction
     }
 }
 

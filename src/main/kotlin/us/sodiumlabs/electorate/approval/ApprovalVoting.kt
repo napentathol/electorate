@@ -12,11 +12,12 @@ import us.sodiumlabs.electorate.sim.Electorate
 import us.sodiumlabs.electorate.sim.Voter
 import us.sodiumlabs.electorate.sim.VotingStrategy
 import java.math.BigDecimal
+import java.util.Optional
 import java.util.Random
 
 class ApprovalVoting(private val approvalVotingStrategy: ApprovalVotingStrategy) : ElectoralSystem {
 
-    override fun produceCandidate(electorate: Electorate): Candidate {
+    override fun electCandidate(electorate: Electorate): Optional<Candidate> {
         val ballots = electorate.poll(approvalVotingStrategy)
         val ballotCount = HashMultiset.create<Candidate>()
 

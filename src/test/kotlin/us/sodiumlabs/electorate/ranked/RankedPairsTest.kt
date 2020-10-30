@@ -26,7 +26,7 @@ internal class RankedPairsTest {
 
         val ranked = RankedPairs()
 
-        assertEquals(candidateA, ranked.produceCandidate(electorate))
+        assertEquals(candidateA, ranked.electCandidate(electorate))
     }
 
     @Test
@@ -37,7 +37,7 @@ internal class RankedPairsTest {
 
         val ranked = RankedPairs()
 
-        assertEquals(candidateB, ranked.produceCandidate(electorate))
+        assertEquals(candidateB, ranked.electCandidate(electorate))
     }
 
     @Test
@@ -48,7 +48,7 @@ internal class RankedPairsTest {
 
         val ranked = RankedPairs()
 
-        assertEquals(candidateC, ranked.produceCandidate(electorate))
+        assertEquals(candidateC, ranked.electCandidate(electorate))
     }
 
     @Test
@@ -65,7 +65,7 @@ internal class RankedPairsTest {
 
         val ranked = RankedPairs()
 
-        assertEquals(candidateA, ranked.produceCandidate(electorate))
+        assertEquals(candidateA, ranked.electCandidate(electorate))
     }
 
     @Test
@@ -83,7 +83,7 @@ internal class RankedPairsTest {
 
         val ranked = RankedPairs()
 
-        assertEquals(candidateB, ranked.produceCandidate(electorate))
+        assertEquals(candidateB, ranked.electCandidate(electorate))
     }
 
     @Test
@@ -100,7 +100,7 @@ internal class RankedPairsTest {
 
         val ranked = RankedPairs()
 
-        assertEquals(candidateA, ranked.produceCandidate(electorate))
+        assertEquals(candidateA, ranked.electCandidate(electorate))
     }
 
     private fun createBallots(a: Candidate, b: Candidate, c: Candidate, count: Int): List<RankedBallot> {

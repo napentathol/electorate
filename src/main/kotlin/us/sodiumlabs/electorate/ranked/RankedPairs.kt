@@ -12,7 +12,7 @@ class RankedPairs : ElectoralSystem {
         val SYSTEM_NAME = ElectoralSystemName("Ranked - Ranked Pairs - Pure")
     }
 
-    override fun produceCandidate(electorate: Electorate): Candidate {
+    override fun electCandidate(electorate: Electorate): Optional<Candidate> {
         val ballots = electorate.poll(PureRankingStrategy.RANKING_STRATEGY)
         val candidateTable = HashBasedTable.create<Candidate, Candidate, Int>()
 
@@ -64,7 +64,7 @@ class RankedPairs : ElectoralSystem {
             nodeA.addVertex(RankedPairGraphVertex(nodeA, nodeB))
         }
 
-        fun findHeadCandidate(): Candidate = rankedPairGraphNodes.first().findHeadNode().value
+        fun findHeadCandidate(): Optional<Candidate> = Optional.of(rankedPairGraphNodes.first().findHeadNode().value)
 
         private fun findNode(candidate: Candidate): Optional<RankedPairGraphNode> {
             return rankedPairGraphNodes

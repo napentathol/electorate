@@ -4,6 +4,7 @@ import com.google.common.collect.HashMultiset
 import us.sodiumlabs.electorate.sim.Candidate
 import us.sodiumlabs.electorate.sim.ElectoralSystemName
 import us.sodiumlabs.electorate.sim.Electorate
+import java.util.Optional
 
 /**
  * Score-then-runoff
@@ -13,8 +14,8 @@ class StarVoting : RangeVoting() {
         val SYSTEM_NAME = ElectoralSystemName("Range - STAR - Pure")
     }
 
-    override fun produceCandidate(electorate: Electorate): Candidate {
-        val ballots = electorate.poll(RangeVoting.VOTING_STRATEGY)
+    override fun electCandidate(electorate: Electorate): Optional<Candidate> {
+        val ballots = electorate.poll(VOTING_STRATEGY)
         val ballotCount = HashMultiset.create<Candidate>()
 
         ballots

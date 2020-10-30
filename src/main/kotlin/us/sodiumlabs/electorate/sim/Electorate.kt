@@ -31,7 +31,7 @@ fun generateCandidatesFromVoters(voters: List<Voter>, maxCandidateCount: Int): L
     val candidates = ArrayList<Candidate>()
     for (i in 1..maxCandidateCount) {
         val potentialCandidate = getVoterMostLikelyToRun(voters, candidates)
-        if(potentialCandidate.isEmpty) break
+        if(!potentialCandidate.isPresent) break
         candidates.add(Candidate(potentialCandidate.get()))
     }
     return candidates
@@ -63,7 +63,7 @@ open class Electorate(private val electorate: List<Voter>, val candidates: List<
                 .collect(Collectors.toList())
     }
 
-    fun calculateRegret(candidate: Candidate): RegretMetrics {
+    fun calculateRegret(candidate: Optional<Candidate>): RegretMetrics {
         val utilityMap = HashMap<Candidate, BigDecimal>()
         var maximumUtility = BigDecimal.ZERO
         var minimumUtility = BigDecimal.ONE
@@ -75,11 +75,13 @@ open class Electorate(private val electorate: List<Voter>, val candidates: List<
             utilityMap[c] = utility
         }
 
-        val rawUtility = utilityMap.getOrElse(candidate) { calculateCandidateUtility(candidate) }
-        val regret = (maximumUtility - rawUtility).max(BigDecimal.ZERO)
-        val normalizedRegret = (regret / (maximumUtility - minimumUtility)).min(BigDecimal.ONE).max(BigDecimal.ZERO)
+        return candidate.map { c ->
+            val rawUtility = utilityMap.getOrElse(c) { calculateCandidateUtility(c) }
+            val regret = (maximumUtility - rawUtility).max(BigDecimal.ZERO)
+            val normalizedRegret = (regret / (maximumUtility - minimumUtility)).min(BigDecimal.ONE).max(BigDecimal.ZERO)
 
-        return RegretMetrics(rawUtility, regret, normalizedRegret)
+            RegretMetrics(rawUtility, regret, normalizedRegret)
+        }.orElseGet { IndeterminateRegretMetrics() }
     }
 
     private fun calculateCandidateUtility(candidate: Candidate): BigDecimal {

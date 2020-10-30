@@ -13,6 +13,7 @@ import us.sodiumlabs.electorate.sim.Stance
 import us.sodiumlabs.electorate.sim.Voter
 import us.sodiumlabs.electorate.sim.VotingStrategy
 import java.math.BigDecimal
+import java.util.Optional
 
 class ElectedTwoPartyPlurality : Plurality() {
     companion object {
@@ -24,7 +25,7 @@ class ElectedTwoPartyPlurality : Plurality() {
         return SYSTEM_NAME
     }
 
-    override fun produceCandidate(electorate: Electorate): Candidate {
+    override fun electCandidate(electorate: Electorate): Optional<Candidate> {
         // Elect a contentious policy
         val policyPolling = electorate.poll(CONTENTION_STRATEGY)
         val policyContentionMap = HashMap<Policy, BigDecimal>()
@@ -73,8 +74,8 @@ class ElectedTwoPartyPlurality : Plurality() {
                 .filter { !it.forParty }
                 .mapTo(againstPartyBallotCount) { it.candidate }
 
-        val forPartyCandidate = findFirst(forPartyBallotCount)
-        val againstPartyCandidate = findFirst(againstPartyBallotCount)
+        val forPartyCandidate = forceFindFirst(forPartyBallotCount)
+        val againstPartyCandidate = forceFindFirst(againstPartyBallotCount)
 
         // Run the actual election. The winner of each party might pull voters of the opposing party, which is why we
         // did not declare the winner based on the number of votes cast for each party.

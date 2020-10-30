@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList
 import us.sodiumlabs.electorate.sim.Candidate
 import us.sodiumlabs.electorate.sim.ElectoralSystemName
 import us.sodiumlabs.electorate.sim.Electorate
+import java.util.Optional
 import java.util.Random
 
 open class RandomTwoPartyPlurality(private val random: Random) : Plurality() {
@@ -16,7 +17,7 @@ open class RandomTwoPartyPlurality(private val random: Random) : Plurality() {
         return SYSTEM_NAME
     }
 
-    override fun produceCandidate(electorate: Electorate): Candidate {
+    override fun electCandidate(electorate: Electorate): Optional<Candidate> {
         val ballots = electorate.poll(VOTING_STRATEGY, getRandomCandidates(electorate))
         val ballotCount = HashMultiset.create<Candidate>()
 

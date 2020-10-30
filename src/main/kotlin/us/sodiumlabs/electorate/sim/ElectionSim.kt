@@ -10,7 +10,7 @@ import com.google.gson.JsonObject
 import us.sodiumlabs.electorate.BigDecimalAverageCollector
 import us.sodiumlabs.electorate.StringWrapper
 import java.io.FileWriter
-import java.math.BigDecimal
+import java.util.Optional
 import kotlin.streams.toList
 
 class ElectionSim(private val electoralSystems: List<ElectoralSystem>) {
@@ -22,7 +22,7 @@ class ElectionSim(private val electoralSystems: List<ElectoralSystem>) {
         println("=== New Electorate ===")
         seenElectorates.add(electorate)
         electoralSystems.forEach { e ->
-            val regret = electorate.calculateRegret(e.produceCandidate(electorate))
+            val regret = electorate.calculateRegret(e.electCandidate(electorate))
             println("${Strings.padEnd("Regret for ${e.getSystemName()}: ", 50, ' ')}$regret")
             regretMatrix.put(e.getSystemName(), regret)
         }
@@ -73,12 +73,24 @@ class ElectionSim(private val electoralSystems: List<ElectoralSystem>) {
 }
 
 interface ElectoralSystem {
-    fun produceCandidate(electorate: Electorate): Candidate
+    fun electCandidate(electorate: Electorate): Optional<Candidate>
 
     fun getSystemName(): ElectoralSystemName
 
-    fun findFirst(count: Multiset<Candidate>): Candidate {
-        return count.entrySet().stream()
+    fun findFirst(counts: Multiset<Candidate>): Optional<Candidate> {
+        val sortedList = sortedCandidateList(counts)
+
+        if (sortedList.isEmpty()) {
+            throw RuntimeException("There should be a candidate with votes!")
+        }
+        if (sortedList.size > 1 && counts.count(sortedList[0]) == counts.count(sortedList[1])) {
+            return Optional.empty()
+        }
+        return Optional.of(sortedList.first())
+    }
+
+    fun forceFindFirst(counts: Multiset<Candidate>): Candidate {
+        return counts.entrySet().stream()
                 .sorted { o1, o2 -> o2.count - o1.count }
                 .findFirst()
                 .orElseThrow { RuntimeException("There should be a candidate with votes!") }

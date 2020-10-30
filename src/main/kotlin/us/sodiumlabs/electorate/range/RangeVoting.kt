@@ -10,6 +10,7 @@ import us.sodiumlabs.electorate.sim.Electorate
 import us.sodiumlabs.electorate.sim.Voter
 import us.sodiumlabs.electorate.sim.VotingStrategy
 import java.math.BigDecimal
+import java.util.Optional
 
 open class RangeVoting : ElectoralSystem {
     companion object {
@@ -18,7 +19,7 @@ open class RangeVoting : ElectoralSystem {
         val MAX_VOTE: BigDecimal = BigDecimal.valueOf(5)
     }
 
-    override fun produceCandidate(electorate: Electorate): Candidate {
+    override fun electCandidate(electorate: Electorate): Optional<Candidate> {
         val ballots = electorate.poll(VOTING_STRATEGY)
         val ballotCount = HashMultiset.create<Candidate>()
 

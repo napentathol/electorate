@@ -51,7 +51,7 @@ fun main(args: Array<String>) {
     ))
 
     for ( i in 1..100 ) {
-        val electorate = generateElectorate(electorateRandom, policies, 100, 10)
+        val electorate = generateElectorate(electorateRandom, policies, 1000, 10)
         electionSim.runElectionSuite(electorate)
     }
 
