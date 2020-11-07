@@ -22,8 +22,8 @@ class ApprovalVoting(private val approvalVotingStrategy: ApprovalVotingStrategy)
         val ballotCount = HashMultiset.create<Candidate>()
 
         ballots.flatMap { it.approvalMap.entries }
-                .filter { it.value }
-                .mapTo(ballotCount) { it.key }
+            .filter { it.value }
+            .mapTo(ballotCount) { it.key }
 
         return findFirst(ballotCount)
     }
@@ -65,8 +65,8 @@ class ApprovalVoting(private val approvalVotingStrategy: ApprovalVotingStrategy)
 
         override fun accept(voter: Voter, candidates: List<Candidate>): ApprovalBallot {
             val threshold = candidates.stream()
-                    .map { voter.calculateCandidateUtility(it) }
-                    .collect(BigDecimalAverageCollector())
+                .map { voter.calculateCandidateUtility(it) }
+                .collect(BigDecimalAverageCollector())
 
             return internalAccept(voter, candidates, threshold)
         }

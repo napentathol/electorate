@@ -24,8 +24,8 @@ open class RangeVoting : ElectoralSystem {
         val ballotCount = HashMultiset.create<Candidate>()
 
         ballots
-                .flatMap { it.candidateMarks.entrySet() }
-                .forEach { ballotCount.add(it.element, it.count) }
+            .flatMap { it.candidateMarks.entrySet() }
+            .forEach { ballotCount.add(it.element, it.count) }
 
         return findFirst(ballotCount)
     }

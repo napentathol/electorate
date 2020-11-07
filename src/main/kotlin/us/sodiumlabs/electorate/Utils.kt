@@ -1,6 +1,5 @@
 package us.sodiumlabs.electorate
 
-import com.google.common.base.Strings
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.Collections
@@ -67,8 +66,8 @@ class BigDecimalAverageCollector : Collector<BigDecimal, BigDecimalAverageCollec
 
         fun combine(another: BigDecimalAccumulator): BigDecimalAccumulator {
             return BigDecimalAccumulator(
-                    sum.add(another.sum),
-                    count.add(another.count)
+                sum.add(another.sum),
+                count.add(another.count)
             )
         }
 

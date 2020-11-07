@@ -53,26 +53,26 @@ class ElectedTwoPartyPlurality : Plurality() {
         }
 
         val electedPolicy = policyContentionMap.entries.stream()
-                .reduce { a, b ->
-                    if (a.value > b.value) {
-                        a
-                    } else {
-                        b
-                    }
+            .reduce { a, b ->
+                if (a.value > b.value) {
+                    a
+                } else {
+                    b
                 }
-                .orElseThrow { RuntimeException("Should elect a policy!") }
-                .key
+            }
+            .orElseThrow { RuntimeException("Should elect a policy!") }
+            .key
 
         // Run Primaries based on the contentious policy.
         val primaryBallots = electorate.poll(PrimaryVotingStrategy(electedPolicy))
         val forPartyBallotCount = HashMultiset.create<Candidate>()
         val againstPartyBallotCount = HashMultiset.create<Candidate>()
         primaryBallots
-                .filter { it.forParty }
-                .mapTo(forPartyBallotCount) { it.candidate }
+            .filter { it.forParty }
+            .mapTo(forPartyBallotCount) { it.candidate }
         primaryBallots
-                .filter { !it.forParty }
-                .mapTo(againstPartyBallotCount) { it.candidate }
+            .filter { !it.forParty }
+            .mapTo(againstPartyBallotCount) { it.candidate }
 
         val forPartyCandidate = forceFindFirst(forPartyBallotCount)
         val againstPartyCandidate = forceFindFirst(againstPartyBallotCount)
@@ -119,8 +119,8 @@ class ElectedTwoPartyPlurality : Plurality() {
 
             var forParty = false
             voter.stances
-                    .filter { it.policy == policy }
-                    .forEach { forParty = it.value > BigDecimal.valueOf(0.5) }
+                .filter { it.policy == policy }
+                .forEach { forParty = it.value > BigDecimal.valueOf(0.5) }
 
             if (outCandidate == null) throw RuntimeException("No candidates with positive utility for voter!")
 

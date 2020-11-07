@@ -24,7 +24,7 @@ class InstantRunnoff : ElectoralSystem {
             ballotCount = countBallots(ballots, candidates)
         }
 
-        if(candidates.size == 0) {
+        if (candidates.size == 0) {
             return Optional.empty()
         }
 
@@ -57,8 +57,8 @@ class InstantRunnoff : ElectoralSystem {
         val lastCount = ballotCount.count(last)
 
         return ballotCount.entrySet()
-                .filter { it.count == lastCount }
-                .map { it.element }
+            .filter { it.count == lastCount }
+            .map { it.element }
     }
 
     override fun getSystemName(): ElectoralSystemName = SYSTEM_NAME

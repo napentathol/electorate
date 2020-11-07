@@ -35,11 +35,11 @@ class ElectionSim(private val electoralSystems: List<ElectoralSystem>) {
             gson.toJson(toJson(), writer)
         }
         regretMatrix.keySet().stream()
-                .sorted()
-                .forEach { k ->
-                    println(RegretStatistics(k, regretMatrix.get(k)).toString())
-                    println()
-                }
+            .sorted()
+            .forEach { k ->
+                println(RegretStatistics(k, regretMatrix.get(k)).toString())
+                println()
+            }
     }
 
     private fun toJson(): JsonObject {
@@ -58,15 +58,24 @@ class ElectionSim(private val electoralSystems: List<ElectoralSystem>) {
     private fun regretStatsToJson(name: ElectoralSystemName): JsonObject {
         val out = JsonObject()
 
-        out.addProperty("mean normalized regret", regretMatrix.get(name).stream()
+        out.addProperty(
+            "mean normalized regret",
+            regretMatrix.get(name).stream()
                 .map { m -> m.normalizedRegret }
-                .collect(BigDecimalAverageCollector()))
-        out.addProperty("mean regret", regretMatrix.get(name).stream()
+                .collect(BigDecimalAverageCollector())
+        )
+        out.addProperty(
+            "mean regret",
+            regretMatrix.get(name).stream()
                 .map { m -> m.regret }
-                .collect(BigDecimalAverageCollector()))
-        out.addProperty("mean raw utility", regretMatrix.get(name).stream()
+                .collect(BigDecimalAverageCollector())
+        )
+        out.addProperty(
+            "mean raw utility",
+            regretMatrix.get(name).stream()
                 .map { m -> m.rawUtility }
-                .collect(BigDecimalAverageCollector()))
+                .collect(BigDecimalAverageCollector())
+        )
 
         return out
     }
@@ -91,17 +100,17 @@ interface ElectoralSystem {
 
     fun forceFindFirst(counts: Multiset<Candidate>): Candidate {
         return counts.entrySet().stream()
-                .sorted { o1, o2 -> o2.count - o1.count }
-                .findFirst()
-                .orElseThrow { RuntimeException("There should be a candidate with votes!") }
-                .element
+            .sorted { o1, o2 -> o2.count - o1.count }
+            .findFirst()
+            .orElseThrow { RuntimeException("There should be a candidate with votes!") }
+            .element
     }
 
     fun sortedCandidateList(count: Multiset<Candidate>): List<Candidate> {
         return count.entrySet().stream()
-                .sorted { o1, o2 -> o2.count - o1.count }
-                .map { it.element }
-                .toList()
+            .sorted { o1, o2 -> o2.count - o1.count }
+            .map { it.element }
+            .toList()
     }
 }
 

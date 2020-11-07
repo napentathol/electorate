@@ -1,25 +1,22 @@
-group 'us.sodiumlabs'
-version '1.0-SNAPSHOT'
-
 buildscript {
-    ext.kotlin_version = '1.1.4-3'
-    ext.guava_version = '24.1-jre'
+    ext.kotlin_version = '1.4.10'
+    ext.guava_version = '30.0-jre'
     ext.gson_version = '2.8.2'
 
     ext.junit_version = '5.2.0-M1'
     ext.mockito_version = '1.5.0'
 
-    ext.ktlint_verstion = '0.22.0'
+    ext.ktlint_verstion = '0.39.0'
+}
 
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
+plugins {
+    id "org.jetbrains.kotlin.jvm" version "$kotlin_version"
 }
 
 apply plugin: 'kotlin'
+
+group 'us.sodiumlabs'
+version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -31,14 +28,16 @@ configurations {
 }
 
 dependencies {
-    compile "com.google.guava:guava:$guava_version"
-    compile "com.google.code.gson:gson:$gson_version"
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+    implementation "com.google.guava:guava:$guava_version"
+    implementation "com.google.code.gson:gson:$gson_version"
 
-    testCompile "org.junit.jupiter:junit-jupiter-api:$junit_version"
-    testCompile "com.nhaarman:mockito-kotlin:$mockito_version"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
-    ktlint "com.github.shyiko:ktlint:$ktlint_verstion"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_version"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine:$junit_version"
+    testImplementation "com.nhaarman:mockito-kotlin:$mockito_version"
+
+    ktlint "com.pinterest:ktlint:$ktlint_verstion"
 }
 
 compileKotlin {
@@ -51,7 +50,7 @@ compileTestKotlin {
 task ktlint(type: JavaExec, group: "verification") {
     description = "Check Kotlin code style."
     classpath = configurations.ktlint
-    main = "com.github.shyiko.ktlint.Main"
+    main = "com.pinterest.ktlint.Main"
     args "src/**/*.kt"
     // to generate report in checkstyle format prepend following args:
     // "--reporter=plain", "--reporter=checkstyle,output=${buildDir}/ktlint.xml"
@@ -62,6 +61,10 @@ check.dependsOn ktlint
 task ktlintFormat(type: JavaExec, group: "formatting") {
     description = "Fix Kotlin code style deviations."
     classpath = configurations.ktlint
-    main = "com.github.shyiko.ktlint.Main"
+    main = "com.pinterest.ktlint.Main"
     args "-F", "src/**/*.kt"
+}
+
+test {
+    useJUnitPlatform()
 }

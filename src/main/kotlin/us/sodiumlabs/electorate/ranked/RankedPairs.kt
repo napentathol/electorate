@@ -32,10 +32,10 @@ class RankedPairs : ElectoralSystem {
 
         // Sort
         candidateTable.cellSet()
-                .sortedBy { it.value }
-                .reversed()
-                // Lock
-                .forEach { rankedPairGraph.add(it.rowKey, it.columnKey, it.value) }
+            .sortedBy { it.value }
+            .reversed()
+            // Lock
+            .forEach { rankedPairGraph.add(it.rowKey, it.columnKey, it.value) }
 
         return rankedPairGraph.findHeadCandidate()
     }
@@ -50,12 +50,12 @@ class RankedPairs : ElectoralSystem {
             checkNotNull(b)
             checkNotNull(weight)
 
-            val nodeA = findNode(a!!).orElseGet {
+            val nodeA = findNode(a).orElseGet {
                 val node = RankedPairGraphNode(a)
                 rankedPairGraphNodes.add(node)
                 node
             }
-            val nodeB = findNode(b!!).orElseGet {
+            val nodeB = findNode(b).orElseGet {
                 val node = RankedPairGraphNode(b)
                 rankedPairGraphNodes.add(node)
                 node
@@ -68,9 +68,9 @@ class RankedPairs : ElectoralSystem {
 
         private fun findNode(candidate: Candidate): Optional<RankedPairGraphNode> {
             return rankedPairGraphNodes
-                    .firstOrNull { it.value == candidate }
-                    ?.let { Optional.of(it) }
-                    ?: Optional.empty()
+                .firstOrNull { it.value == candidate }
+                ?.let { Optional.of(it) }
+                ?: Optional.empty()
         }
     }
 

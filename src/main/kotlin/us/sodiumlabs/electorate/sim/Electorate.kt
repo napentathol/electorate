@@ -13,14 +13,13 @@ import java.util.Optional
 import java.util.Random
 import java.util.stream.Collectors
 import java.util.stream.IntStream
-import kotlin.collections.HashMap
 
 fun generateElectorate(random: Random, policies: List<Policy>, electorCount: Int, maxCandidateCount: Int): Electorate {
 
     val voterRandom = Random(random.nextLong())
     val voters = IntStream.range(0, electorCount)
-            .mapToObj { Voter(generateRandomStances(Random(voterRandom.nextLong()), policies), generateRandomBigDecimal(voterRandom)) }
-            .collect(Collectors.toList())
+        .mapToObj { Voter(generateRandomStances(Random(voterRandom.nextLong()), policies), generateRandomBigDecimal(voterRandom)) }
+        .collect(Collectors.toList())
 
     val candidates = generateCandidatesFromVoters(voters, maxCandidateCount)
 
@@ -31,7 +30,7 @@ fun generateCandidatesFromVoters(voters: List<Voter>, maxCandidateCount: Int): L
     val candidates = ArrayList<Candidate>()
     for (i in 1..maxCandidateCount) {
         val potentialCandidate = getVoterMostLikelyToRun(voters, candidates)
-        if(!potentialCandidate.isPresent) break
+        if (!potentialCandidate.isPresent) break
         candidates.add(Candidate(potentialCandidate.get()))
     }
     return candidates
@@ -39,16 +38,16 @@ fun generateCandidatesFromVoters(voters: List<Voter>, maxCandidateCount: Int): L
 
 private fun getVoterMostLikelyToRun(voters: List<Voter>, candidates: List<Candidate>): Optional<Voter> {
     return voters.stream()
-            .map { v -> Tuple(v, v.calculateCurrentRunningPropensity(candidates)) }
-            .filter { t -> t.t > BigDecimal.ZERO }
-            .max { t1, t2 -> t1.t.compareTo(t2.t) }
-            .map { t -> t.s }
+        .map { v -> Tuple(v, v.calculateCurrentRunningPropensity(candidates)) }
+        .filter { t -> t.t > BigDecimal.ZERO }
+        .max { t1, t2 -> t1.t.compareTo(t2.t) }
+        .map { t -> t.s }
 }
 
 private fun generateRandomStances(random: Random, policies: List<Policy>): List<Stance> {
     return policies.stream()
-            .map { p -> Stance(p, generateRandomBigDecimal(random)) }
-            .collect(Collectors.toList())
+        .map { p -> Stance(p, generateRandomBigDecimal(random)) }
+        .collect(Collectors.toList())
 }
 
 open class Electorate(private val electorate: List<Voter>, val candidates: List<Candidate>) {
@@ -59,8 +58,8 @@ open class Electorate(private val electorate: List<Voter>, val candidates: List<
 
     open fun <B> poll(votingStrategy: VotingStrategy<B>, overrideCandidates: List<Candidate>): List<B> where B: Ballot {
         return electorate.stream()
-                .map { t: Voter -> votingStrategy.accept(t, overrideCandidates) }
-                .collect(Collectors.toList())
+            .map { t: Voter -> votingStrategy.accept(t, overrideCandidates) }
+            .collect(Collectors.toList())
     }
 
     fun calculateRegret(candidate: Optional<Candidate>): RegretMetrics {
@@ -86,8 +85,8 @@ open class Electorate(private val electorate: List<Voter>, val candidates: List<
 
     private fun calculateCandidateUtility(candidate: Candidate): BigDecimal {
         return electorate.stream()
-                .map { v -> v.calculateCandidateUtility(candidate) }
-                .collect(BigDecimalAverageCollector())
+            .map { v -> v.calculateCandidateUtility(candidate) }
+            .collect(BigDecimalAverageCollector())
     }
 
     fun toJson(): JsonObject {
@@ -108,8 +107,8 @@ open class Electorate(private val electorate: List<Voter>, val candidates: List<
 class Voter(val stances: List<Stance>, private val runningPropensity: BigDecimal) {
     fun calculateCandidateUtility(candidate: Candidate): BigDecimal {
         return stances.stream()
-                .map { s -> BigDecimal.ONE - (candidate.getStance(s.policy).value - s.value).abs() }
-                .collect(BigDecimalAverageCollector())
+            .map { s -> BigDecimal.ONE - (candidate.getStance(s.policy).value - s.value).abs() }
+            .collect(BigDecimalAverageCollector())
     }
 
     fun calculateCurrentRunningPropensity(candidates: List<Candidate>): BigDecimal {
@@ -118,9 +117,9 @@ class Voter(val stances: List<Stance>, private val runningPropensity: BigDecimal
 
     private fun calculateMaxCandidateUtility(candidates: List<Candidate>): BigDecimal {
         return candidates.stream()
-                .map { c -> calculateCandidateUtility(c) }
-                .max { o1, o2 -> o1.compareTo(o2) }
-                .orElse(BigDecimal.ZERO)
+            .map { c -> calculateCandidateUtility(c) }
+            .max { o1, o2 -> o1.compareTo(o2) }
+            .orElse(BigDecimal.ZERO)
     }
 
     fun toJson(): JsonObject {
@@ -148,10 +147,10 @@ class Candidate(stanceList: List<Stance>) {
     }
 
     override fun equals(other: Any?): Boolean {
-        if(other !is Candidate) return false
+        if (other !is Candidate) return false
 
-        for(entry in stances.entries) {
-            if(!other.stances.containsKey(entry.key) || other.stances[entry.key] != entry.value) return false
+        for (entry in stances.entries) {
+            if (!other.stances.containsKey(entry.key) || other.stances[entry.key] != entry.value) return false
         }
 
         return true

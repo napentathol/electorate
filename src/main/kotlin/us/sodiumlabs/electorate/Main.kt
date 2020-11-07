@@ -17,40 +17,43 @@ import us.sodiumlabs.electorate.sortition.Sortition
 import java.math.BigDecimal
 import java.util.Random
 
-fun main(args: Array<String>) {
+fun main() {
     val seedRandom = Random(0x1337_AFC0_FFEE_BEEF)
     val electorateRandom = Random(seedRandom.nextLong())
 
     val policies = ImmutableList.of(
-            Policy("Apples"),
-            Policy("Oranges"),
-            Policy("Bananas"),
-            Policy("Lemons"),
-            Policy("Grapes") )
+        Policy("Apples"),
+        Policy("Oranges"),
+        Policy("Bananas"),
+        Policy("Lemons"),
+        Policy("Grapes")
+    )
 
-    val electionSim = ElectionSim(ImmutableList.of(
-        // Random elections
-        Sortition(Random(seedRandom.nextLong())),
-        // Plurality elections
-        Plurality(),
-        StrategicPlurality(),
-        RandomTwoPartyPlurality(Random(seedRandom.nextLong())),
-        ElectedTwoPartyPlurality(),
-        // Range elections
-        RangeVoting(),
-        StarVoting(),
-        // Ranked elections
-        InstantRunnoff(),
-        RankedPairs(),
-        // Approval elections
-        ApprovalVoting(ApprovalVoting.ThresholdApprovalVotingStrategy(BigDecimal.valueOf(0.5))),
-        ApprovalVoting(ApprovalVoting.ThresholdApprovalVotingStrategy(BigDecimal.valueOf(0.75))),
-        ApprovalVoting(ApprovalVoting.ThresholdApprovalVotingStrategy(BigDecimal.valueOf(0.25))),
-        ApprovalVoting(ApprovalVoting.MeanThresholdAppovalVotingStrategy()),
-        ApprovalVoting(ApprovalVoting.RandomThresholdApprovalVotingStrategy(Random(seedRandom.nextLong())))
-    ))
+    val electionSim = ElectionSim(
+        ImmutableList.of(
+            // Random elections
+            Sortition(Random(seedRandom.nextLong())),
+            // Plurality elections
+            Plurality(),
+            StrategicPlurality(),
+            RandomTwoPartyPlurality(Random(seedRandom.nextLong())),
+            ElectedTwoPartyPlurality(),
+            // Range elections
+            RangeVoting(),
+            StarVoting(),
+            // Ranked elections
+            InstantRunnoff(),
+            RankedPairs(),
+            // Approval elections
+            ApprovalVoting(ApprovalVoting.ThresholdApprovalVotingStrategy(BigDecimal.valueOf(0.5))),
+            ApprovalVoting(ApprovalVoting.ThresholdApprovalVotingStrategy(BigDecimal.valueOf(0.75))),
+            ApprovalVoting(ApprovalVoting.ThresholdApprovalVotingStrategy(BigDecimal.valueOf(0.25))),
+            ApprovalVoting(ApprovalVoting.MeanThresholdAppovalVotingStrategy()),
+            ApprovalVoting(ApprovalVoting.RandomThresholdApprovalVotingStrategy(Random(seedRandom.nextLong())))
+        )
+    )
 
-    for ( i in 1..100 ) {
+    for (i in 1..100) {
         val electorate = generateElectorate(electorateRandom, policies, 1000, 10)
         electionSim.runElectionSuite(electorate)
     }

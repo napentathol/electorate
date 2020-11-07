@@ -1,10 +1,10 @@
 package us.sodiumlabs.electorate.sim
 
 import com.google.common.collect.ImmutableList
-import org.junit.jupiter.api.Test
-
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 import java.math.BigDecimal
+import java.util.Optional
 
 internal class ElectorateTest {
     companion object {
@@ -22,8 +22,8 @@ internal class ElectorateTest {
 
         val electorate = Electorate(ImmutableList.of(voter1, voter2), ImmutableList.of(candidate1, candidate2))
 
-        assertEquals(ONE, electorate.calculateRegret(candidate1))
-        assertEquals(ZERO, electorate.calculateRegret(candidate2))
+        assertEquals(ONE, electorate.calculateRegret(Optional.of(candidate1)))
+        assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate2)))
     }
 
     @Test
@@ -35,7 +35,7 @@ internal class ElectorateTest {
 
         val electorate = Electorate(ImmutableList.of(voter1, voter2), ImmutableList.of(candidate1))
 
-        assertEquals(ZERO, electorate.calculateRegret(candidate1))
+        assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate1)))
     }
 
     @Test
@@ -47,8 +47,8 @@ internal class ElectorateTest {
 
         val electorate = Electorate(ImmutableList.of(voter1), ImmutableList.of(candidate1, candidate2))
 
-        assertEquals(ONE, electorate.calculateRegret(candidate1))
-        assertEquals(ZERO, electorate.calculateRegret(candidate2))
+        assertEquals(ONE, electorate.calculateRegret(Optional.of(candidate1)))
+        assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate2)))
     }
 
     @Test
@@ -61,8 +61,8 @@ internal class ElectorateTest {
 
         val electorate = Electorate(ImmutableList.of(voter1, voter2), ImmutableList.of(candidate1, candidate2))
 
-        assertEquals(ZERO, electorate.calculateRegret(candidate1))
-        assertEquals(ZERO, electorate.calculateRegret(candidate2))
+        assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate1)))
+        assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate2)))
     }
 
     @Test
@@ -75,8 +75,8 @@ internal class ElectorateTest {
 
         val electorate = Electorate(ImmutableList.of(voter1, voter2), ImmutableList.of(candidate1, candidate2))
 
-        assertEquals(ZERO, electorate.calculateRegret(candidate1))
-        assertEquals(ZERO, electorate.calculateRegret(candidate2))
+        assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate1)))
+        assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate2)))
     }
 
     @Test
@@ -89,8 +89,8 @@ internal class ElectorateTest {
 
         val electorate = Electorate(ImmutableList.of(voter1, voter2), ImmutableList.of(candidate1, candidate2))
 
-        assertEquals(BigDecimal("0.5000000000"), electorate.calculateRegret(candidate1))
-        assertEquals(ZERO, electorate.calculateRegret(candidate2))
+        assertEquals(BigDecimal("0.5000000000"), electorate.calculateRegret(Optional.of(candidate1)))
+        assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate2)))
     }
 
     @Test
@@ -103,8 +103,8 @@ internal class ElectorateTest {
 
         val electorate = Electorate(ImmutableList.of(voter1, voter2), ImmutableList.of(candidate1, candidate2))
 
-        assertEquals(BigDecimal("0.5000000000"), electorate.calculateRegret(candidate1))
-        assertEquals(ZERO, electorate.calculateRegret(candidate2))
+        assertEquals(BigDecimal("0.5000000000"), electorate.calculateRegret(Optional.of(candidate1)))
+        assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate2)))
     }
 
     @Test
@@ -117,8 +117,8 @@ internal class ElectorateTest {
 
         val electorate = Electorate(ImmutableList.of(voter1, voter2), ImmutableList.of(candidate1, candidate2))
 
-        assertEquals(BigDecimal("0.2500000000"), electorate.calculateRegret(candidate1))
-        assertEquals(ZERO, electorate.calculateRegret(candidate2))
+        assertEquals(BigDecimal("0.2500000000"), electorate.calculateRegret(Optional.of(candidate1)))
+        assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate2)))
     }
 
     @Test
@@ -170,15 +170,21 @@ internal class ElectorateTest {
     private fun createVoter(issue1: Double, issue2: Double): Voter = createVoter(issue1, issue2, 0.0)
 
     private fun createVoter(issue1: Double, issue2: Double, runningPotential: Double): Voter {
-        return Voter(ImmutableList.of(
+        return Voter(
+            ImmutableList.of(
                 Stance(Policy("Issue1"), BigDecimal.valueOf(issue1)),
-                Stance(Policy("Issue2"), BigDecimal.valueOf(issue2))),
-                BigDecimal(runningPotential))
+                Stance(Policy("Issue2"), BigDecimal.valueOf(issue2))
+            ),
+            BigDecimal(runningPotential)
+        )
     }
 
     private fun createCandidate(issue1: Double, issue2: Double): Candidate {
-        return Candidate(ImmutableList.of(
+        return Candidate(
+            ImmutableList.of(
                 Stance(Policy("Issue1"), BigDecimal.valueOf(issue1)),
-                Stance(Policy("Issue2"), BigDecimal.valueOf(issue2))))
+                Stance(Policy("Issue2"), BigDecimal.valueOf(issue2))
+            )
+        )
     }
 }
