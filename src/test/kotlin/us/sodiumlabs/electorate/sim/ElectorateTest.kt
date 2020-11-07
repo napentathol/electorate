@@ -22,8 +22,8 @@ internal class ElectorateTest {
 
         val electorate = Electorate(ImmutableList.of(voter1, voter2), ImmutableList.of(candidate1, candidate2))
 
-        assertEquals(ONE, electorate.calculateRegret(Optional.of(candidate1)))
-        assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate2)))
+        assertEquals(ONE, electorate.calculateRegret(Optional.of(candidate1)).regret)
+        assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate2)).regret)
     }
 
     @Test
@@ -35,7 +35,7 @@ internal class ElectorateTest {
 
         val electorate = Electorate(ImmutableList.of(voter1, voter2), ImmutableList.of(candidate1))
 
-        assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate1)))
+        assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate1)).regret)
     }
 
     @Test
@@ -47,8 +47,8 @@ internal class ElectorateTest {
 
         val electorate = Electorate(ImmutableList.of(voter1), ImmutableList.of(candidate1, candidate2))
 
-        assertEquals(ONE, electorate.calculateRegret(Optional.of(candidate1)))
-        assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate2)))
+        assertEquals(ONE, electorate.calculateRegret(Optional.of(candidate1)).regret)
+        assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate2)).regret)
     }
 
     @Test
@@ -61,8 +61,8 @@ internal class ElectorateTest {
 
         val electorate = Electorate(ImmutableList.of(voter1, voter2), ImmutableList.of(candidate1, candidate2))
 
-        assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate1)))
-        assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate2)))
+        assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate1)).regret)
+        assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate2)).regret)
     }
 
     @Test
@@ -75,8 +75,8 @@ internal class ElectorateTest {
 
         val electorate = Electorate(ImmutableList.of(voter1, voter2), ImmutableList.of(candidate1, candidate2))
 
-        assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate1)))
-        assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate2)))
+        assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate1)).regret)
+        assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate2)).regret)
     }
 
     @Test
@@ -89,8 +89,8 @@ internal class ElectorateTest {
 
         val electorate = Electorate(ImmutableList.of(voter1, voter2), ImmutableList.of(candidate1, candidate2))
 
-        assertEquals(BigDecimal("0.5000000000"), electorate.calculateRegret(Optional.of(candidate1)))
-        assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate2)))
+        assertEquals(BigDecimal("0.5000000000"), electorate.calculateRegret(Optional.of(candidate1)).regret)
+        assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate2)).regret)
     }
 
     @Test
@@ -103,8 +103,8 @@ internal class ElectorateTest {
 
         val electorate = Electorate(ImmutableList.of(voter1, voter2), ImmutableList.of(candidate1, candidate2))
 
-        assertEquals(BigDecimal("0.5000000000"), electorate.calculateRegret(Optional.of(candidate1)))
-        assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate2)))
+        assertEquals(BigDecimal("0.5000000000"), electorate.calculateRegret(Optional.of(candidate1)).regret)
+        assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate2)).regret)
     }
 
     @Test
@@ -117,8 +117,8 @@ internal class ElectorateTest {
 
         val electorate = Electorate(ImmutableList.of(voter1, voter2), ImmutableList.of(candidate1, candidate2))
 
-        assertEquals(BigDecimal("0.2500000000"), electorate.calculateRegret(Optional.of(candidate1)))
-        assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate2)))
+        assertEquals(BigDecimal("0.2500000000"), electorate.calculateRegret(Optional.of(candidate1)).regret)
+        assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate2)).regret)
     }
 
     @Test

@@ -13,7 +13,11 @@ import java.util.stream.Collector
 const val PRECISION = 10
 
 fun generateRandomBigDecimal(random: Random): BigDecimal {
-    return BigDecimal(random.nextInt(1_000_000_000)).divide(BigDecimal(1_000_000_000), PRECISION, RoundingMode.FLOOR)
+    return BigDecimal(
+        random.nextInt(1_000_000_000)).divide(BigDecimal(1_000_000_000),
+        PRECISION,
+        RoundingMode.FLOOR
+    )
 }
 
 abstract class StringWrapper(private val s: String) : Comparable<StringWrapper> {

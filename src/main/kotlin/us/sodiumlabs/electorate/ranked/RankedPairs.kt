@@ -35,7 +35,10 @@ class RankedPairs : ElectoralSystem {
             .sortedBy { it.value }
             .reversed()
             // Lock
-            .forEach { rankedPairGraph.add(it.rowKey, it.columnKey, it.value) }
+            .forEach {
+                println("${it.rowKey}\t${it.columnKey}\t${it.value}")
+                rankedPairGraph.add(it.rowKey, it.columnKey, it.value)
+            }
 
         return rankedPairGraph.findHeadCandidate()
     }

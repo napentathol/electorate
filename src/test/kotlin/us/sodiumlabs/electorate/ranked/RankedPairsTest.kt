@@ -8,14 +8,17 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import us.sodiumlabs.electorate.sim.Candidate
 import us.sodiumlabs.electorate.sim.Electorate
+import us.sodiumlabs.electorate.sim.Policy
+import us.sodiumlabs.electorate.sim.Stance
 import us.sodiumlabs.electorate.sim.VotingStrategy
+import java.math.BigDecimal
 
 internal class RankedPairsTest {
     companion object {
-        val candidateA = Candidate(ImmutableList.of())
-        val candidateB = Candidate(ImmutableList.of())
-        val candidateC = Candidate(ImmutableList.of())
-        val candidateD = Candidate(ImmutableList.of())
+        val candidateA = Candidate(ImmutableList.of(Stance(Policy("apple"), BigDecimal.valueOf(0.1))))
+        val candidateB = Candidate(ImmutableList.of(Stance(Policy("apple"), BigDecimal.valueOf(0.2))))
+        val candidateC = Candidate(ImmutableList.of(Stance(Policy("apple"), BigDecimal.valueOf(0.3))))
+        val candidateD = Candidate(ImmutableList.of(Stance(Policy("apple"), BigDecimal.valueOf(0.4))))
     }
 
     @Test
@@ -26,7 +29,7 @@ internal class RankedPairsTest {
 
         val ranked = RankedPairs()
 
-        assertEquals(candidateA, ranked.electCandidate(electorate))
+        assertEquals(candidateA, ranked.electCandidate(electorate).get())
     }
 
     @Test
@@ -37,7 +40,7 @@ internal class RankedPairsTest {
 
         val ranked = RankedPairs()
 
-        assertEquals(candidateB, ranked.electCandidate(electorate))
+        assertEquals(candidateB, ranked.electCandidate(electorate).get())
     }
 
     @Test
@@ -48,7 +51,7 @@ internal class RankedPairsTest {
 
         val ranked = RankedPairs()
 
-        assertEquals(candidateC, ranked.electCandidate(electorate))
+        assertEquals(candidateC, ranked.electCandidate(electorate).get())
     }
 
     @Test
@@ -65,7 +68,7 @@ internal class RankedPairsTest {
 
         val ranked = RankedPairs()
 
-        assertEquals(candidateA, ranked.electCandidate(electorate))
+        assertEquals(candidateA, ranked.electCandidate(electorate).get())
     }
 
     @Test
@@ -83,7 +86,7 @@ internal class RankedPairsTest {
 
         val ranked = RankedPairs()
 
-        assertEquals(candidateB, ranked.electCandidate(electorate))
+        assertEquals(candidateB, ranked.electCandidate(electorate).get())
     }
 
     @Test
@@ -100,7 +103,7 @@ internal class RankedPairsTest {
 
         val ranked = RankedPairs()
 
-        assertEquals(candidateA, ranked.electCandidate(electorate))
+        assertEquals(candidateA, ranked.electCandidate(electorate).get())
     }
 
     private fun createBallots(a: Candidate, b: Candidate, c: Candidate, count: Int): List<RankedBallot> {
