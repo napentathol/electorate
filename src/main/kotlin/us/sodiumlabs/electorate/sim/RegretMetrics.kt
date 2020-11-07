@@ -5,18 +5,25 @@ import us.sodiumlabs.electorate.BigDecimalAverageCollector
 import java.math.BigDecimal
 import java.util.function.Function
 
-open class RegretMetrics(val rawUtility: BigDecimal, val regret: BigDecimal, val normalizedRegret: BigDecimal) {
+open class RegretMetrics(
+    val rawUtility: BigDecimalWrapper,
+    val regret: BigDecimalWrapper,
+    val normalizedRegret: BigDecimalWrapper,
+    val indeterminate: Boolean = false
+) {
     override fun toString(): String {
-        return "raw utility: ${padBigDecimal(rawUtility)} " +
-            "regret: ${padBigDecimal(regret)} " +
-            "normalized regret: $normalizedRegret"
+        return if (indeterminate) {
+            "election was indeterminate"
+        } else {
+            "raw utility: ${padBigDecimal(rawUtility)} " +
+                "regret: ${padBigDecimal(regret)} " +
+                "normalized regret: $normalizedRegret"
+        }
     }
 }
 
-class IndeterminateRegretMetrics: RegretMetrics(BigDecimal.ZERO, BigDecimal.ONE, BigDecimal.ONE) {
-    override fun toString(): String {
-        return "election was indeterminate"
-    }
+fun indeterminate(): RegretMetrics {
+    return RegretMetrics(nan(), nan(), nan(), true)
 }
 
 class RegretStatistics(private val name: ElectoralSystemName, regretMetrics: Collection<RegretMetrics>) {
@@ -26,15 +33,11 @@ class RegretStatistics(private val name: ElectoralSystemName, regretMetrics: Col
     private val indeterminateFraction: BigDecimal
 
     init {
-        rawUtilityStatistics = Statistics(regretMetrics, Function { r -> r.rawUtility })
-        regretStatistics = Statistics(regretMetrics, Function { r -> r.regret })
-        normalizedRegretStatistics = Statistics(regretMetrics, Function { r -> r.normalizedRegret })
+        rawUtilityStatistics = Statistics(regretMetrics, false) { r -> r.rawUtility }
+        regretStatistics = Statistics(regretMetrics) { r -> r.regret }
+        normalizedRegretStatistics = Statistics(regretMetrics) { r -> r.normalizedRegret }
         var indeterminate = 0
-        for (r in regretMetrics) {
-            if (r is IndeterminateRegretMetrics) {
-                indeterminate++
-            }
-        }
+        regretMetrics.filter { it.indeterminate }.forEach { indeterminate++ }
         indeterminateFraction = BigDecimal(indeterminate).divide(BigDecimal(regretMetrics.size))
     }
 
@@ -51,16 +54,22 @@ class RegretStatistics(private val name: ElectoralSystemName, regretMetrics: Col
     }
 }
 
-class Statistics(regretMetrics: Collection<RegretMetrics>, metricAccessor: Function<RegretMetrics, BigDecimal>) {
-    private val p0: BigDecimal
-    private val p10: BigDecimal
-    private val p50: BigDecimal
-    private val p90: BigDecimal
-    private val p100: BigDecimal
-    private val mean: BigDecimal
+class Statistics(
+    regretMetrics: Collection<RegretMetrics>,
+    nanHigh: Boolean = true,
+    metricAccessor: Function<RegretMetrics, BigDecimalWrapper>
+) {
+    private val p0: BigDecimalWrapper
+    private val p10: BigDecimalWrapper
+    private val p50: BigDecimalWrapper
+    private val p90: BigDecimalWrapper
+    private val p100: BigDecimalWrapper
+    private val mean: BigDecimalWrapper
 
     init {
-        val sortedMetrics = regretMetrics.sortedBy { r -> metricAccessor.apply(r) }.toList()
+        val sortedMetrics = regretMetrics.sortedWith { left, right ->
+            metricAccessor.apply(left).compare(metricAccessor.apply(right), nanHigh)
+        }
         p0 = metricAccessor.apply(sortedMetrics[0])
         p10 = metricAccessor.apply(sortedMetrics[sortedMetrics.size / 10])
         p50 = metricAccessor.apply(sortedMetrics[sortedMetrics.size / 2])
@@ -81,6 +90,6 @@ class Statistics(regretMetrics: Collection<RegretMetrics>, metricAccessor: Funct
     }
 }
 
-fun padBigDecimal(b: BigDecimal): String {
+fun padBigDecimal(b: BigDecimalWrapper): String {
     return Strings.padEnd("$b;", 13, ' ')
 }

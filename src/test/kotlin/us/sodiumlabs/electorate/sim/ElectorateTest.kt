@@ -172,19 +172,23 @@ internal class ElectorateTest {
     private fun createVoter(issue1: Double, issue2: Double, runningPotential: Double): Voter {
         return Voter(
             ImmutableList.of(
-                Stance(Policy("Issue1"), BigDecimal.valueOf(issue1)),
-                Stance(Policy("Issue2"), BigDecimal.valueOf(issue2))
+                Stance(Policy("Issue1"), wrap(BigDecimal.valueOf(issue1))),
+                Stance(Policy("Issue2"), wrap(BigDecimal.valueOf(issue2)))
             ),
-            BigDecimal(runningPotential)
+            wrap(BigDecimal(runningPotential))
         )
     }
 
     private fun createCandidate(issue1: Double, issue2: Double): Candidate {
         return Candidate(
             ImmutableList.of(
-                Stance(Policy("Issue1"), BigDecimal.valueOf(issue1)),
-                Stance(Policy("Issue2"), BigDecimal.valueOf(issue2))
+                Stance(Policy("Issue1"), wrap(BigDecimal.valueOf(issue1))),
+                Stance(Policy("Issue2"), wrap(BigDecimal.valueOf(issue2)))
             )
         )
+    }
+
+    private fun assertEquals(bigDecimal: BigDecimal, bigDecimalWrapper: BigDecimalWrapper) {
+        assertEquals(wrap(bigDecimal), bigDecimalWrapper)
     }
 }

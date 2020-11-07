@@ -63,18 +63,21 @@ class ElectionSim(private val electoralSystems: List<ElectoralSystem>) {
             regretMatrix.get(name).stream()
                 .map { m -> m.normalizedRegret }
                 .collect(BigDecimalAverageCollector())
+                .toString()
         )
         out.addProperty(
             "mean regret",
             regretMatrix.get(name).stream()
                 .map { m -> m.regret }
                 .collect(BigDecimalAverageCollector())
+                .toString()
         )
         out.addProperty(
             "mean raw utility",
             regretMatrix.get(name).stream()
                 .map { m -> m.rawUtility }
                 .collect(BigDecimalAverageCollector())
+                .toString()
         )
 
         return out
@@ -90,7 +93,7 @@ interface ElectoralSystem {
         val sortedList = sortedCandidateList(counts)
 
         if (sortedList.isEmpty()) {
-            throw RuntimeException("There should be a candidate with votes!")
+            return Optional.empty()
         }
         if (sortedList.size > 1 && counts.count(sortedList[0]) == counts.count(sortedList[1])) {
             return Optional.empty()

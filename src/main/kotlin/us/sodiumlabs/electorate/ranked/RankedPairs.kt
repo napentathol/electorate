@@ -36,7 +36,6 @@ class RankedPairs : ElectoralSystem {
             .reversed()
             // Lock
             .forEach {
-                println("${it.rowKey}\t${it.columnKey}\t${it.value}")
                 rankedPairGraph.add(it.rowKey, it.columnKey, it.value)
             }
 

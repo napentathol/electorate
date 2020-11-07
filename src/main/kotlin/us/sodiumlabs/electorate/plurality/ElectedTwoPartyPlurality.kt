@@ -4,6 +4,7 @@ import com.google.common.collect.HashMultiset
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.ImmutableMap
 import us.sodiumlabs.electorate.sim.Ballot
+import us.sodiumlabs.electorate.sim.BigDecimalWrapper
 import us.sodiumlabs.electorate.sim.Candidate
 import us.sodiumlabs.electorate.sim.ElectoralSystemName
 import us.sodiumlabs.electorate.sim.Electorate
@@ -28,7 +29,7 @@ class ElectedTwoPartyPlurality : Plurality() {
     override fun electCandidate(electorate: Electorate): Optional<Candidate> {
         // Elect a contentious policy
         val policyPolling = electorate.poll(CONTENTION_STRATEGY)
-        val policyContentionMap = HashMap<Policy, BigDecimal>()
+        val policyContentionMap = HashMap<Policy, BigDecimalWrapper>()
 
         for (i in 0 until policyPolling.size - 1) {
             for (j in i until policyPolling.size) {
@@ -40,13 +41,9 @@ class ElectedTwoPartyPlurality : Plurality() {
                     val s2 = v2.stances.getOrDefault(key, NULL_STANCE).value
 
                     policyContentionMap.compute(key) { _, it ->
-                        val diff = (s1 - s2).abs()
+                        val diff = s1.operate(s2) { s1, s2 -> (s1 - s2).abs() }
 
-                        if (it == null) {
-                            diff
-                        } else {
-                            it + diff
-                        }
+                        it?.operate(diff) { l, r -> l + r } ?: diff
                     }
                 }
             }
@@ -54,7 +51,7 @@ class ElectedTwoPartyPlurality : Plurality() {
 
         val electedPolicy = policyContentionMap.entries.stream()
             .reduce { a, b ->
-                if (a.value > b.value) {
+                if (a.value.bimap(b.value) { l, r -> l > r }.orElse(false)) {
                     a
                 } else {
                     b
@@ -111,16 +108,24 @@ class ElectedTwoPartyPlurality : Plurality() {
             for (c in candidates) {
                 val utility = voter.calculateCandidateUtility(c)
 
-                if (utility > maximumUtility) {
-                    maximumUtility = utility
-                    outCandidate = c
-                }
+                outCandidate = utility.map {
+                    if (it > maximumUtility) {
+                        maximumUtility = it
+                        c
+                    } else {
+                        outCandidate
+                    }
+                }.orElse(outCandidate)
             }
 
             var forParty = false
             voter.stances
                 .filter { it.policy == policy }
-                .forEach { forParty = it.value > BigDecimal.valueOf(0.5) }
+                .forEach {
+                    forParty = it.value
+                        .map { v -> v > BigDecimal.valueOf(0.5) }
+                        .orElseThrow { RuntimeException("Voter does not understand ${it.policy}") }
+                }
 
             if (outCandidate == null) throw RuntimeException("No candidates with positive utility for voter!")
 

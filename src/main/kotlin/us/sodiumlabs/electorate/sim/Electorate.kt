@@ -39,8 +39,8 @@ fun generateCandidatesFromVoters(voters: List<Voter>, maxCandidateCount: Int): L
 private fun getVoterMostLikelyToRun(voters: List<Voter>, candidates: List<Candidate>): Optional<Voter> {
     return voters.stream()
         .map { v -> Tuple(v, v.calculateCurrentRunningPropensity(candidates)) }
-        .filter { t -> t.t > BigDecimal.ZERO }
-        .max { t1, t2 -> t1.t.compareTo(t2.t) }
+        .filter { t -> t.t.map { v -> v > BigDecimal.ZERO }.orElse(false) }
+        .max { t1, t2 -> t1.t.compare(t2.t) }
         .map { t -> t.s }
 }
 
@@ -63,27 +63,38 @@ open class Electorate(private val electorate: List<Voter>, val candidates: List<
     }
 
     fun calculateRegret(candidate: Optional<Candidate>): RegretMetrics {
-        val utilityMap = HashMap<Candidate, BigDecimal>()
+        val utilityMap = HashMap<Candidate, BigDecimalWrapper>()
         var maximumUtility = BigDecimal.ZERO
         var minimumUtility = BigDecimal.ONE
 
         candidates.forEach { c ->
             val utility = calculateCandidateUtility(c)
-            if (utility > maximumUtility) maximumUtility = utility
-            if (utility < minimumUtility) minimumUtility = utility
+            utility.ifPresent {
+                if (it > maximumUtility) maximumUtility = it
+                if (it < minimumUtility) minimumUtility = it
+            }
             utilityMap[c] = utility
         }
 
         return candidate.map { c ->
             val rawUtility = utilityMap.getOrElse(c) { calculateCandidateUtility(c) }
-            val regret = (maximumUtility - rawUtility).max(BigDecimal.ZERO)
-            val normalizedRegret = (regret / (maximumUtility - minimumUtility)).min(BigDecimal.ONE).max(BigDecimal.ZERO)
+            val regret = rawUtility
+                .map { (maximumUtility - it).max(BigDecimal.ZERO) }
+                .map(::wrap)
+                .orElseGet(::nan)
+            val normalizedRegret = if (maximumUtility.compareTo(minimumUtility) != 0) {
+                regret.map {
+                    (it / (maximumUtility - minimumUtility)).min(BigDecimal.ONE).max(BigDecimal.ZERO)
+                }.map(::wrap).orElseGet(::nan)
+            } else {
+                nan()
+            }
 
             RegretMetrics(rawUtility, regret, normalizedRegret)
-        }.orElseGet { IndeterminateRegretMetrics() }
+        }.orElseGet { indeterminate() }
     }
 
-    private fun calculateCandidateUtility(candidate: Candidate): BigDecimal {
+    private fun calculateCandidateUtility(candidate: Candidate): BigDecimalWrapper {
         return electorate.stream()
             .map { v -> v.calculateCandidateUtility(candidate) }
             .collect(BigDecimalAverageCollector())
@@ -104,28 +115,33 @@ open class Electorate(private val electorate: List<Voter>, val candidates: List<
     }
 }
 
-class Voter(val stances: List<Stance>, private val runningPropensity: BigDecimal) {
-    fun calculateCandidateUtility(candidate: Candidate): BigDecimal {
+class Voter(val stances: List<Stance>, private val runningPropensity: BigDecimalWrapper) {
+    fun calculateCandidateUtility(candidate: Candidate): BigDecimalWrapper {
         return stances.stream()
-            .map { s -> BigDecimal.ONE - (candidate.getStance(s.policy).value - s.value).abs() }
+            .map { s ->
+                candidate.getStance(s.policy).value.operate(s.value) { left, right ->
+                    BigDecimal.ONE - (left - right).abs()
+                }
+            }
             .collect(BigDecimalAverageCollector())
     }
 
-    fun calculateCurrentRunningPropensity(candidates: List<Candidate>): BigDecimal {
-        return runningPropensity - calculateMaxCandidateUtility(candidates)
+    fun calculateCurrentRunningPropensity(candidates: List<Candidate>): BigDecimalWrapper {
+        val maxCandidateUtility = calculateMaxCandidateUtility(candidates)
+        return runningPropensity.operate(maxCandidateUtility) { left, right -> left - right }
     }
 
-    private fun calculateMaxCandidateUtility(candidates: List<Candidate>): BigDecimal {
+    private fun calculateMaxCandidateUtility(candidates: List<Candidate>): BigDecimalWrapper {
         return candidates.stream()
             .map { c -> calculateCandidateUtility(c) }
-            .max { o1, o2 -> o1.compareTo(o2) }
-            .orElse(BigDecimal.ZERO)
+            .max { o1, o2 -> o1.compare(o2) }
+            .orElse(wrap(BigDecimal.ZERO))
     }
 
     fun toJson(): JsonObject {
         val out = JsonObject()
         stances.forEach { s ->
-            out.addProperty(s.policy.toString(), s.value)
+            out.addProperty(s.policy.toString(), s.value.toString())
         }
         return out
     }
@@ -166,14 +182,14 @@ class Candidate(stanceList: List<Stance>) {
 
     fun toJson(): JsonObject {
         val out = JsonObject()
-        stances.forEach { s -> out.addProperty(s.key.toString(), s.value.value) }
+        stances.forEach { s -> out.addProperty(s.key.toString(), s.value.value.toString()) }
         return out
     }
 }
 
-class Stance(val policy: Policy, val value: BigDecimal)
+class Stance(val policy: Policy, val value: BigDecimalWrapper)
 
-val NULL_STANCE = Stance(Policy("null"), BigDecimal.valueOf(0.5))
+val NULL_STANCE = Stance(Policy("null"), nan())
 
 class Policy(s: String) : StringWrapper(s)
 

@@ -1,5 +1,8 @@
 package us.sodiumlabs.electorate
 
+import us.sodiumlabs.electorate.sim.BigDecimalWrapper
+import us.sodiumlabs.electorate.sim.nan
+import us.sodiumlabs.electorate.sim.wrap
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.Collections
@@ -12,11 +15,10 @@ import java.util.stream.Collector
 
 const val PRECISION = 10
 
-fun generateRandomBigDecimal(random: Random): BigDecimal {
-    return BigDecimal(
-        random.nextInt(1_000_000_000)).divide(BigDecimal(1_000_000_000),
-        PRECISION,
-        RoundingMode.FLOOR
+fun generateRandomBigDecimal(random: Random): BigDecimalWrapper {
+    return wrap(
+        BigDecimal(random.nextInt(1_000_000_000))
+            .divide(BigDecimal(1_000_000_000), PRECISION, RoundingMode.FLOOR)
     )
 }
 
@@ -32,21 +34,23 @@ abstract class StringWrapper(private val s: String) : Comparable<StringWrapper> 
 
 class Tuple<S, T>(val s: S, val t: T)
 
-class BigDecimalAverageCollector : Collector<BigDecimal, BigDecimalAverageCollector.BigDecimalAccumulator, BigDecimal> {
+class BigDecimalAverageCollector : Collector<BigDecimalWrapper, BigDecimalAverageCollector.BigDecimalAccumulator, BigDecimalWrapper> {
 
     override fun supplier(): Supplier<BigDecimalAccumulator> {
         return Supplier { BigDecimalAccumulator() }
     }
 
-    override fun accumulator(): BiConsumer<BigDecimalAccumulator, BigDecimal> {
-        return BiConsumer { obj, successRate -> obj.add(successRate) }
+    override fun accumulator(): BiConsumer<BigDecimalAccumulator, BigDecimalWrapper> {
+        return BiConsumer { accumulator, successRate ->
+            successRate.ifPresent { accumulator.add(it) }
+        }
     }
 
     override fun combiner(): BinaryOperator<BigDecimalAccumulator> {
         return BinaryOperator { obj, another -> obj.combine(another) }
     }
 
-    override fun finisher(): Function<BigDecimalAccumulator, BigDecimal> {
+    override fun finisher(): Function<BigDecimalAccumulator, BigDecimalWrapper> {
         return Function { it.average() }
     }
 
@@ -63,9 +67,12 @@ class BigDecimalAverageCollector : Collector<BigDecimal, BigDecimalAverageCollec
             this.count = count
         }
 
-        fun average(): BigDecimal {
-            if (count == BigDecimal.ZERO) throw RuntimeException("Count must not be zero!")
-            return sum.divide(count, PRECISION, RoundingMode.HALF_UP)
+        fun average(): BigDecimalWrapper {
+            return if (count == BigDecimal.ZERO) {
+                nan()
+            } else {
+                wrap(sum.divide(count, PRECISION, RoundingMode.HALF_UP))
+            }
         }
 
         fun combine(another: BigDecimalAccumulator): BigDecimalAccumulator {

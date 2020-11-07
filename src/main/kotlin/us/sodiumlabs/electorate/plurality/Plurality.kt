@@ -38,10 +38,14 @@ open class Plurality : ElectoralSystem {
             for (c in candidates) {
                 val utility = voter.calculateCandidateUtility(c)
 
-                if (utility > maximumUtility) {
-                    maximumUtility = utility
-                    outCandidate = c
-                }
+                outCandidate = utility.map {
+                    if (it > maximumUtility) {
+                        maximumUtility = it
+                        c
+                    } else {
+                        outCandidate
+                    }
+                }.orElse(outCandidate)
             }
 
             if (outCandidate == null) throw RuntimeException("No candidates with positive utility for voter!")

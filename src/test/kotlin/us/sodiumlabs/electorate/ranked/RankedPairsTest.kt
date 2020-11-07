@@ -11,14 +11,25 @@ import us.sodiumlabs.electorate.sim.Electorate
 import us.sodiumlabs.electorate.sim.Policy
 import us.sodiumlabs.electorate.sim.Stance
 import us.sodiumlabs.electorate.sim.VotingStrategy
+import us.sodiumlabs.electorate.sim.wrap
 import java.math.BigDecimal
 
 internal class RankedPairsTest {
     companion object {
-        val candidateA = Candidate(ImmutableList.of(Stance(Policy("apple"), BigDecimal.valueOf(0.1))))
-        val candidateB = Candidate(ImmutableList.of(Stance(Policy("apple"), BigDecimal.valueOf(0.2))))
-        val candidateC = Candidate(ImmutableList.of(Stance(Policy("apple"), BigDecimal.valueOf(0.3))))
-        val candidateD = Candidate(ImmutableList.of(Stance(Policy("apple"), BigDecimal.valueOf(0.4))))
+        val candidateA = createCandidate(1)
+        val candidateB = createCandidate(2)
+        val candidateC = createCandidate(3)
+        val candidateD = createCandidate(4)
+
+        private fun createCandidate(policyLevel: Int): Candidate =
+            Candidate(
+                ImmutableList.of(
+                    Stance(
+                        Policy("apple"),
+                        wrap(BigDecimal(policyLevel).divide(BigDecimal.TEN))
+                    )
+                )
+            )
     }
 
     @Test

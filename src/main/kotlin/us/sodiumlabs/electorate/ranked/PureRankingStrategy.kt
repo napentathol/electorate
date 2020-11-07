@@ -11,7 +11,7 @@ class PureRankingStrategy : VotingStrategy<RankedBallot> {
     }
     override fun accept(voter: Voter, candidates: List<Candidate>): RankedBallot {
         val outList = candidates.map { Tuple(it, voter.calculateCandidateUtility(it)) }
-            .sortedBy { it.t }
+            .sortedWith { l, r -> l.t.compare(r.t) }
             .reversed()
             .map { it.s }
             .toList()

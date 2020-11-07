@@ -31,7 +31,6 @@ internal class RegretBigDecimalWrapperTest {
 
     @Test
     fun compare() {
-        println("wut")
         val list = mutableListOf(
             wrap(BigDecimal.ZERO),
             wrap(BigDecimal.ONE),

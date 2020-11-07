@@ -48,7 +48,10 @@ open class RangeVoting : ElectoralSystem {
             val marks = HashMultiset.create<Candidate>()
 
             candidates.forEach {
-                marks.add(it, (voter.calculateCandidateUtility(it) * MAX_VOTE).toInt())
+                val score = voter.calculateCandidateUtility(it)
+                    .map { n -> (n * MAX_VOTE).toInt() }
+                    .orElseThrow { RuntimeException("Unable to calculate candidate utility, wtf!") }
+                marks.add(it, score)
             }
 
             return RangeBallot(marks)

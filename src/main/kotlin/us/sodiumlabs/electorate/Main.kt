@@ -13,6 +13,7 @@ import us.sodiumlabs.electorate.ranked.RankedPairs
 import us.sodiumlabs.electorate.sim.ElectionSim
 import us.sodiumlabs.electorate.sim.Policy
 import us.sodiumlabs.electorate.sim.generateElectorate
+import us.sodiumlabs.electorate.sim.wrap
 import us.sodiumlabs.electorate.sortition.Sortition
 import java.math.BigDecimal
 import java.util.Random
@@ -45,9 +46,9 @@ fun main() {
             InstantRunnoff(),
             RankedPairs(),
             // Approval elections
-            ApprovalVoting(ApprovalVoting.ThresholdApprovalVotingStrategy(BigDecimal.valueOf(0.5))),
-            ApprovalVoting(ApprovalVoting.ThresholdApprovalVotingStrategy(BigDecimal.valueOf(0.75))),
-            ApprovalVoting(ApprovalVoting.ThresholdApprovalVotingStrategy(BigDecimal.valueOf(0.25))),
+            ApprovalVoting(ApprovalVoting.ThresholdApprovalVotingStrategy(wrap(BigDecimal.valueOf(0.5)))),
+            ApprovalVoting(ApprovalVoting.ThresholdApprovalVotingStrategy(wrap(BigDecimal.valueOf(0.75)))),
+            ApprovalVoting(ApprovalVoting.ThresholdApprovalVotingStrategy(wrap(BigDecimal.valueOf(0.25)))),
             ApprovalVoting(ApprovalVoting.MeanThresholdAppovalVotingStrategy()),
             ApprovalVoting(ApprovalVoting.RandomThresholdApprovalVotingStrategy(Random(seedRandom.nextLong())))
         )
