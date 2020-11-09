@@ -145,9 +145,7 @@ class Voter(val stances: List<Stance>, private val runningPropensity: BigDecimal
 
     fun calculateCurrentRunningPropensity(candidates: List<Candidate>): BigDecimalWrapper {
         val maxCandidateUtility = calculateMaxCandidateUtility(candidates)
-        return runningPropensity.biMap(maxCandidateUtility) {
-            left, right -> left - right
-        }
+        return runningPropensity.biMap(maxCandidateUtility) { left, right -> left - right }
     }
 
     private fun calculateMaxCandidateUtility(candidates: List<Candidate>): BigDecimalWrapper {
