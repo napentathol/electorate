@@ -22,7 +22,7 @@ internal class ElectorateTest {
 
         val electorate = Electorate(ImmutableList.of(voter1, voter2), ImmutableList.of(candidate1, candidate2))
 
-        assertEquals(ONE, electorate.calculateRegret(Optional.of(candidate1)).regret)
+        assertEquals(BigDecimal("1.4142135620"), electorate.calculateRegret(Optional.of(candidate1)).regret)
         assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate2)).regret)
     }
 
@@ -47,7 +47,7 @@ internal class ElectorateTest {
 
         val electorate = Electorate(ImmutableList.of(voter1), ImmutableList.of(candidate1, candidate2))
 
-        assertEquals(ONE, electorate.calculateRegret(Optional.of(candidate1)).regret)
+        assertEquals(BigDecimal("1.4142135620"), electorate.calculateRegret(Optional.of(candidate1)).regret)
         assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate2)).regret)
     }
 
@@ -89,7 +89,7 @@ internal class ElectorateTest {
 
         val electorate = Electorate(ImmutableList.of(voter1, voter2), ImmutableList.of(candidate1, candidate2))
 
-        assertEquals(BigDecimal("0.5000000000"), electorate.calculateRegret(Optional.of(candidate1)).regret)
+        assertEquals(BigDecimal("0.7071067809"), electorate.calculateRegret(Optional.of(candidate1)).regret)
         assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate2)).regret)
     }
 
@@ -103,7 +103,7 @@ internal class ElectorateTest {
 
         val electorate = Electorate(ImmutableList.of(voter1, voter2), ImmutableList.of(candidate1, candidate2))
 
-        assertEquals(BigDecimal("0.5000000000"), electorate.calculateRegret(Optional.of(candidate1)).regret)
+        assertEquals(BigDecimal("0.6180339880"), electorate.calculateRegret(Optional.of(candidate1)).regret)
         assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate2)).regret)
     }
 
@@ -117,7 +117,7 @@ internal class ElectorateTest {
 
         val electorate = Electorate(ImmutableList.of(voter1, voter2), ImmutableList.of(candidate1, candidate2))
 
-        assertEquals(BigDecimal("0.2500000000"), electorate.calculateRegret(Optional.of(candidate1)).regret)
+        assertEquals(BigDecimal("0.2644805974"), electorate.calculateRegret(Optional.of(candidate1)).regret)
         assertEquals(ZERO, electorate.calculateRegret(Optional.of(candidate2)).regret)
     }
 

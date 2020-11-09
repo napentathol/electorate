@@ -9,7 +9,7 @@ internal class RegretBigDecimalWrapperTest {
 
     @Test
     fun `test compare results`() {
-        val zero = wrap(BigDecimal.ZERO)
+        val zero = zero()
         val nan = nan()
 
         assertEquals(1, nan.compare(zero))
@@ -32,7 +32,7 @@ internal class RegretBigDecimalWrapperTest {
     @Test
     fun compare() {
         val list = mutableListOf(
-            wrap(BigDecimal.ZERO),
+            zero(),
             wrap(BigDecimal.ONE),
             wrap(BigDecimal.TEN),
             nan(),
@@ -40,7 +40,7 @@ internal class RegretBigDecimalWrapperTest {
         )
 
         val nanHigh = listOf(
-            wrap(BigDecimal.ZERO),
+            zero(),
             wrap(BigDecimal.ONE),
             wrap(BigDecimal.TEN),
             nan(),
@@ -49,7 +49,7 @@ internal class RegretBigDecimalWrapperTest {
         val nanLow = listOf(
             nan(),
             nan(),
-            wrap(BigDecimal.ZERO),
+            zero(),
             wrap(BigDecimal.ONE),
             wrap(BigDecimal.TEN)
         )

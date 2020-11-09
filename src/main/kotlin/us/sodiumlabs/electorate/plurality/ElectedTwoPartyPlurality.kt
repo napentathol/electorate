@@ -41,9 +41,9 @@ class ElectedTwoPartyPlurality : Plurality() {
                     val s2 = v2.stances.getOrDefault(key, NULL_STANCE).value
 
                     policyContentionMap.compute(key) { _, it ->
-                        val diff = s1.operate(s2) { s1, s2 -> (s1 - s2).abs() }
+                        val diff = s1.biMap(s2) { s1, s2 -> (s1 - s2).abs() }
 
-                        it?.operate(diff) { l, r -> l + r } ?: diff
+                        it?.biMap(diff) { l, r -> l + r } ?: diff
                     }
                 }
             }
@@ -51,7 +51,7 @@ class ElectedTwoPartyPlurality : Plurality() {
 
         val electedPolicy = policyContentionMap.entries.stream()
             .reduce { a, b ->
-                if (a.value.bimap(b.value) { l, r -> l > r }.orElse(false)) {
+                if (a.value.biMapToOptional(b.value) { l, r -> l > r }.orElse(false)) {
                     a
                 } else {
                     b
@@ -108,7 +108,7 @@ class ElectedTwoPartyPlurality : Plurality() {
             for (c in candidates) {
                 val utility = voter.calculateCandidateUtility(c)
 
-                outCandidate = utility.map {
+                outCandidate = utility.mapToOptional {
                     if (it > maximumUtility) {
                         maximumUtility = it
                         c
@@ -123,7 +123,7 @@ class ElectedTwoPartyPlurality : Plurality() {
                 .filter { it.policy == policy }
                 .forEach {
                     forParty = it.value
-                        .map { v -> v > BigDecimal.valueOf(0.5) }
+                        .mapToOptional { v -> v > BigDecimal.valueOf(0.5) }
                         .orElseThrow { RuntimeException("Voter does not understand ${it.policy}") }
                 }
 

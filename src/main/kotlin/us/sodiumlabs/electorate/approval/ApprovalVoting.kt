@@ -39,7 +39,7 @@ class ApprovalVoting(private val approvalVotingStrategy: ApprovalVotingStrategy)
             val mapBuilder = ImmutableMap.builder<Candidate, Boolean>()
             for (c in candidates) {
                 val approved = voter.calculateCandidateUtility(c)
-                    .bimap(threshold) { l, r -> l > r }
+                    .biMapToOptional(threshold) { l, r -> l > r }
                     .orElse(false)
                 mapBuilder.put(c, approved)
             }

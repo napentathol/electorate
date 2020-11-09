@@ -49,7 +49,7 @@ open class RangeVoting : ElectoralSystem {
 
             candidates.forEach {
                 val score = voter.calculateCandidateUtility(it)
-                    .map { n -> (n * MAX_VOTE).toInt() }
+                    .mapToOptional { n -> (n * MAX_VOTE).toInt() }
                     .orElseThrow { RuntimeException("Unable to calculate candidate utility, wtf!") }
                 marks.add(it, score)
             }

@@ -38,7 +38,7 @@ open class Plurality : ElectoralSystem {
             for (c in candidates) {
                 val utility = voter.calculateCandidateUtility(c)
 
-                outCandidate = utility.map {
+                outCandidate = utility.mapToOptional {
                     if (it > maximumUtility) {
                         maximumUtility = it
                         c

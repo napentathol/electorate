@@ -4,10 +4,13 @@ import com.google.common.collect.ImmutableMap
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import us.sodiumlabs.electorate.BigDecimalAverageCollector
+import us.sodiumlabs.electorate.PRECISION
 import us.sodiumlabs.electorate.StringWrapper
 import us.sodiumlabs.electorate.Tuple
 import us.sodiumlabs.electorate.generateRandomBigDecimal
 import java.math.BigDecimal
+import java.math.MathContext
+import java.math.RoundingMode
 import java.util.Objects
 import java.util.Optional
 import java.util.Random
@@ -39,7 +42,7 @@ fun generateCandidatesFromVoters(voters: List<Voter>, maxCandidateCount: Int): L
 private fun getVoterMostLikelyToRun(voters: List<Voter>, candidates: List<Candidate>): Optional<Voter> {
     return voters.stream()
         .map { v -> Tuple(v, v.calculateCurrentRunningPropensity(candidates)) }
-        .filter { t -> t.t.map { v -> v > BigDecimal.ZERO }.orElse(false) }
+        .filter { t -> t.t.mapToOptional { v -> v > BigDecimal.ZERO }.orElse(false) }
         .max { t1, t2 -> t1.t.compare(t2.t) }
         .map { t -> t.s }
 }
@@ -79,11 +82,11 @@ open class Electorate(private val electorate: List<Voter>, val candidates: List<
         return candidate.map { c ->
             val rawUtility = utilityMap.getOrElse(c) { calculateCandidateUtility(c) }
             val regret = rawUtility
-                .map { (maximumUtility - it).max(BigDecimal.ZERO) }
+                .mapToOptional { (maximumUtility - it).max(BigDecimal.ZERO) }
                 .map(::wrap)
                 .orElseGet(::nan)
             val normalizedRegret = if (maximumUtility.compareTo(minimumUtility) != 0) {
-                regret.map {
+                regret.mapToOptional {
                     (it / (maximumUtility - minimumUtility)).min(BigDecimal.ONE).max(BigDecimal.ZERO)
                 }.map(::wrap).orElseGet(::nan)
             } else {
@@ -116,26 +119,42 @@ open class Electorate(private val electorate: List<Voter>, val candidates: List<
 }
 
 class Voter(val stances: List<Stance>, private val runningPropensity: BigDecimalWrapper) {
+
+    companion object {
+        private val SQRT_CONTEXT = MathContext(PRECISION, RoundingMode.FLOOR)
+    }
+
+    private val policyScale: BigDecimal
+
+    init {
+        policyScale = BigDecimal.valueOf(stances.size.toLong()).sqrt(SQRT_CONTEXT)
+    }
+
     fun calculateCandidateUtility(candidate: Candidate): BigDecimalWrapper {
         return stances.stream()
             .map { s ->
-                candidate.getStance(s.policy).value.operate(s.value) { left, right ->
+                candidate.getStance(s.policy).value.biMap(s.value) { left, right ->
                     BigDecimal.ONE - (left - right).abs()
                 }
-            }
-            .collect(BigDecimalAverageCollector())
+            }.map {
+                it.map { x -> x * x }
+            }.reduce(zero()) { x, y ->
+                x.biMap(y) { l, r -> l + r }
+            }.map { it.sqrt(SQRT_CONTEXT) / policyScale }
     }
 
     fun calculateCurrentRunningPropensity(candidates: List<Candidate>): BigDecimalWrapper {
         val maxCandidateUtility = calculateMaxCandidateUtility(candidates)
-        return runningPropensity.operate(maxCandidateUtility) { left, right -> left - right }
+        return runningPropensity.biMap(maxCandidateUtility) {
+            left, right -> left - right
+        }
     }
 
     private fun calculateMaxCandidateUtility(candidates: List<Candidate>): BigDecimalWrapper {
         return candidates.stream()
             .map { c -> calculateCandidateUtility(c) }
             .max { o1, o2 -> o1.compare(o2) }
-            .orElse(wrap(BigDecimal.ZERO))
+            .orElse(zero())
     }
 
     fun toJson(): JsonObject {

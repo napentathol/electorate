@@ -15,31 +15,38 @@ fun nan(): BigDecimalWrapper {
     return BigDecimalWrapper.NAN_WRAPPER
 }
 
+fun zero(): BigDecimalWrapper {
+    return BigDecimalWrapper.ZERO
+}
+
 abstract class BigDecimalWrapper {
     companion object {
         internal val NAN_WRAPPER = NaNBigDecimalWrapper()
+        internal val ZERO = wrap(BigDecimal.ZERO)
     }
 
     abstract fun ifPresent(consumer: Consumer<BigDecimal>)
 
-    abstract fun <T> map(operation: Function<BigDecimal, T>): Optional<T>
+    abstract fun <T> mapToOptional(operation: Function<BigDecimal, T>): Optional<T>
 
-    abstract fun <T> bimap(
+    abstract fun <T> biMapToOptional(
         other: BigDecimalWrapper,
         operation: BiFunction<BigDecimal, BigDecimal, T>
     ): Optional<T>
 
-    internal abstract fun <T> acceptRealBiMap(
+    internal abstract fun <T> acceptRealBiMapToOptional(
         other: RealBigDecimalWrapper,
         operation: BiFunction<BigDecimal, BigDecimal, T>
     ): Optional<T>
 
-    abstract fun operate(
+    abstract fun map(operation: Function<BigDecimal, BigDecimal>): BigDecimalWrapper
+
+    abstract fun biMap(
         other: BigDecimalWrapper,
         operation: BiFunction<BigDecimal, BigDecimal, BigDecimal>
     ): BigDecimalWrapper
 
-    internal abstract fun acceptRealOperate(
+    internal abstract fun acceptRealBiMap(
         other: RealBigDecimalWrapper,
         operation: BiFunction<BigDecimal, BigDecimal, BigDecimal>
     ): BigDecimalWrapper
@@ -54,32 +61,36 @@ abstract class BigDecimalWrapper {
 internal class RealBigDecimalWrapper(private val v: BigDecimal): BigDecimalWrapper() {
     override fun ifPresent(consumer: Consumer<BigDecimal>) = consumer.accept(v)
 
-    override fun <T> map(operation: Function<BigDecimal, T>): Optional<T> {
+    override fun <T> mapToOptional(operation: Function<BigDecimal, T>): Optional<T> {
         return Optional.ofNullable(operation.apply(v))
     }
 
-    override fun <T> bimap(
+    override fun <T> biMapToOptional(
         other: BigDecimalWrapper,
         operation: BiFunction<BigDecimal, BigDecimal, T>
     ): Optional<T> {
-        return other.acceptRealBiMap(this, operation)
+        return other.acceptRealBiMapToOptional(this, operation)
     }
 
-    override fun <T> acceptRealBiMap(
+    override fun <T> acceptRealBiMapToOptional(
         other: RealBigDecimalWrapper,
         operation: BiFunction<BigDecimal, BigDecimal, T>
     ): Optional<T> {
         return Optional.ofNullable(operation.apply(other.v, v))
     }
 
-    override fun operate(
+    override fun map(operation: Function<BigDecimal, BigDecimal>): BigDecimalWrapper {
+        return wrap(operation.apply(v))
+    }
+
+    override fun biMap(
         other: BigDecimalWrapper,
         operation: BiFunction<BigDecimal, BigDecimal, BigDecimal>
     ): BigDecimalWrapper {
-        return other.acceptRealOperate(this, operation)
+        return other.acceptRealBiMap(this, operation)
     }
 
-    override fun acceptRealOperate(
+    override fun acceptRealBiMap(
         other: RealBigDecimalWrapper,
         operation: BiFunction<BigDecimal, BigDecimal, BigDecimal>
     ): BigDecimalWrapper {
@@ -116,24 +127,26 @@ internal class NaNBigDecimalWrapper: BigDecimalWrapper() {
         // do nothing
     }
 
-    override fun <T> map(operation: Function<BigDecimal, T>): Optional<T> = Optional.empty()
+    override fun <T> mapToOptional(operation: Function<BigDecimal, T>): Optional<T> = Optional.empty()
 
-    override fun <T> bimap(
+    override fun <T> biMapToOptional(
         other: BigDecimalWrapper,
         operation: BiFunction<BigDecimal, BigDecimal, T>
     ): Optional<T> = Optional.empty()
 
-    override fun <T> acceptRealBiMap(
+    override fun <T> acceptRealBiMapToOptional(
         other: RealBigDecimalWrapper,
         operation: BiFunction<BigDecimal, BigDecimal, T>
     ): Optional<T> = Optional.empty()
 
-    override fun operate(
+    override fun map(operation: Function<BigDecimal, BigDecimal>): BigDecimalWrapper = this
+
+    override fun biMap(
         other: BigDecimalWrapper,
         operation: BiFunction<BigDecimal, BigDecimal, BigDecimal>
     ): BigDecimalWrapper = this
 
-    override fun acceptRealOperate(
+    override fun acceptRealBiMap(
         other: RealBigDecimalWrapper,
         operation: BiFunction<BigDecimal, BigDecimal, BigDecimal>
     ): BigDecimalWrapper = this

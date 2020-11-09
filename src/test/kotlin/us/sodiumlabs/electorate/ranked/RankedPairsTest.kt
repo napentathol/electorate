@@ -1,9 +1,9 @@
 package us.sodiumlabs.electorate.ranked
 
 import com.google.common.collect.ImmutableList
-import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import us.sodiumlabs.electorate.sim.Candidate
